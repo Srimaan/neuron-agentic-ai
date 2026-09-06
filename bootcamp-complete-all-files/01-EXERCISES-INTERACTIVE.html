@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 1, Day 1: Exercises & Solutions</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --secondary: #10b981;
+            --warning: #ef4444;
+            --accent: #f59e0b;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1a1a3e 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* ========== HEADER ========== */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tagline {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        /* ========== EXERCISE CARD ========== */
+        .exercise-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s;
+        }
+
+        .exercise-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.1);
+        }
+
+        .exercise-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .exercise-number {
+            background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .exercise-title {
+            flex: 1;
+        }
+
+        .exercise-title h2 {
+            color: var(--text-primary);
+            margin: 0 0 0.5rem 0;
+            font-size: 1.5rem;
+        }
+
+        .exercise-meta {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.375rem 0.75rem;
+            background: rgba(59, 130, 246, 0.1);
+            color: #60a5fa;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .badge.easy {
+            background: rgba(16, 185, 129, 0.1);
+            color: #34d399;
+        }
+
+        .badge.medium {
+            background: rgba(245, 158, 11, 0.1);
+            color: #fbbf24;
+        }
+
+        .badge.hard {
+            background: rgba(239, 68, 68, 0.1);
+            color: #fca5a5;
+        }
+
+        /* ========== CONTENT SECTIONS ========== */
+        .challenge {
+            background: rgba(59, 130, 246, 0.05);
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .challenge h4 {
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .requirements {
+            margin-bottom: 1.5rem;
+        }
+
+        .requirements h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .requirement-list {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .requirement-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .requirement-list li::before {
+            content: '☑';
+            color: var(--secondary);
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        /* ========== SOLUTION ========== */
+        .solution-toggle {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border: 1px solid var(--primary);
+            border-radius: 0.5rem;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .solution-toggle:hover {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+        }
+
+        .solution-toggle.open {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+            border-color: var(--secondary);
+        }
+
+        .solution-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .solution-toggle.open .solution-label {
+            color: var(--secondary);
+        }
+
+        .toggle-icon {
+            font-size: 1.25rem;
+            transition: transform 0.3s;
+        }
+
+        .solution-toggle.open .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .solution-content {
+            display: none;
+            animation: slideDown 0.3s ease-out;
+            margin-top: 1rem;
+        }
+
+        .solution-content.open {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ========== CODE BLOCKS ========== */
+        .code-block {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: #e2e8f0;
+        }
+
+        .code-inline {
+            background: var(--bg-card);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            color: #60a5fa;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+        }
+
+        /* ========== KEY TAKEAWAYS ========== */
+        .takeaways {
+            background: rgba(16, 185, 129, 0.05);
+            border-left: 4px solid var(--secondary);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .takeaways h4 {
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+
+        .takeaways ul {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .takeaways li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+        }
+
+        .takeaways li::before {
+            content: '✓';
+            color: var(--secondary);
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        /* ========== CALLOUT ========== */
+        .callout {
+            background: rgba(59, 130, 246, 0.05);
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .callout strong {
+            color: var(--text-primary);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        /* ========== PROGRESS BAR ========== */
+        .progress-container {
+            background: var(--bg-card);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .progress-title {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            background: var(--border);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, var(--primary) 0%, #8b5cf6 100%);
+            height: 100%;
+            width: 16%;
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            .exercise-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .exercise-number {
+                width: 40px;
+                height: 40px;
+                font-size: 1.25rem;
+            }
+
+            .exercise-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>Week 1, Day 1: Exercises</h1>
+            <p class="tagline">Practice prompt engineering with 6 hands-on exercises</p>
+        </div>
+
+        <!-- PROGRESS -->
+        <div class="progress-container">
+            <div class="progress-title">Your Progress</div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <div class="progress-text">Complete exercises to build your skills from Beginner → Expert</div>
+        </div>
+
+        <!-- EXERCISE 1 -->
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <div class="exercise-number">1</div>
+                <div class="exercise-title">
+                    <h2>Write a Loan Evaluation Prompt</h2>
+                    <div class="exercise-meta">
+                        <span class="badge easy">Easy</span>
+                        <span>⏱️ 30 min</span>
+                        <span>⭐ Foundations</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="challenge">
+                <h4>Challenge</h4>
+                <p>You work at a bank. Write a prompt that Claude will follow EVERY TIME to produce the same output format.</p>
+            </div>
+
+            <div class="requirements">
+                <h4>Requirements</h4>
+                <ul class="requirement-list">
+                    <li>Clear role definition</li>
+                    <li>Specific evaluation criteria</li>
+                    <li>Scoring system</li>
+                    <li>Decision thresholds</li>
+                    <li>JSON output format</li>
+                    <li>At least one example</li>
+                </ul>
+            </div>
+
+            <div class="callout">
+                <strong>Test Case:</strong>
+                <p>Jane Smith, Credit: 680, Income: $75,000, Debt: $1,200/month, Loan: $40,000, Employed 2 years</p>
+                <p style="margin-top: 0.75rem; font-size: 0.875rem; color: var(--text-muted);">Your prompt should produce consistent JSON with decision, reason, score, and factors.</p>
+            </div>
+
+            <button class="solution-toggle" onclick="toggleSolution(this)">
+                <span class="solution-label">
+                    <span>💡 See Solution</span>
+                </span>
+                <span class="toggle-icon">▼</span>
+            </button>
+
+            <div class="solution-content">
+                <div class="code-block"><code>ROLE: You are a loan evaluation system.
+
+OUTPUT FORMAT (JSON ONLY):
+{
+  "decision": "approved" | "denied" | "review",
+  "reason": "brief justification",
+  "score": 0-100,
+  "debt_to_income": number,
+  "factors": ["list"]
+}
+
+SCORING:
+- Credit 750+: 80 pts (excellent)
+- Credit 700-749: 60 pts (good)
+- Credit 650-699: 40 pts (fair)
+- DTI < 0.25: 80 pts (excellent)
+- DTI 0.25-0.35: 60 pts (good)
+- DTI 0.36-0.45: 40 pts (fair)
+- Employed > 2 years: 20 pts
+- Employed < 2 years: 10 pts
+
+THRESHOLDS:
+- 200+: Approved
+- 150-199: Approved
+- 100-149: Review
+- < 100: Denied</code></div>
+
+                <div class="takeaways">
+                    <h4>Key Insight</h4>
+                    <ul>
+                        <li>Explicit is better than implicit</li>
+                        <li>Numbers are more precise than descriptions</li>
+                        <li>Format specification ensures consistent output</li>
+                        <li>Examples show Claude what good looks like</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- EXERCISE 2 -->
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <div class="exercise-number">2</div>
+                <div class="exercise-title">
+                    <h2>Identify Problems in Broken Prompts</h2>
+                    <div class="exercise-meta">
+                        <span class="badge easy">Easy</span>
+                        <span>⏱️ 20 min</span>
+                        <span>⭐ Debugging</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="challenge">
+                <h4>Challenge</h4>
+                <p>For each prompt, identify: (1) What's wrong, (2) How it fails, (3) How to fix it</p>
+            </div>
+
+            <button class="solution-toggle" onclick="toggleSolution(this)">
+                <span class="solution-label">
+                    <span>💡 See Solutions</span>
+                </span>
+                <span class="toggle-icon">▼</span>
+            </button>
+
+            <div class="solution-content">
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="color: var(--warning); margin-bottom: 1rem;">Prompt A: Too Vague</h4>
+                    <div class="code-block"><code>"Evaluate this loan application and tell me if it's good or bad."</code></div>
+                    <p><strong style="color: var(--text-primary);">Problems:</strong></p>
+                    <ul style="margin-left: 1.5rem; color: var(--text-secondary);">
+                        <li>No clear decision format ("good or bad" is ambiguous)</li>
+                        <li>No criteria specified</li>
+                        <li>No scoring system</li>
+                        <li>No JSON format</li>
+                    </ul>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="color: var(--warning); margin-bottom: 1rem;">Prompt B: Ambiguous Rules</h4>
+                    <div class="code-block"><code>"You are a loan officer. Approve loans if they seem reasonable."</code></div>
+                    <p><strong style="color: var(--text-primary);">Problems:</strong></p>
+                    <ul style="margin-left: 1.5rem; color: var(--text-secondary);">
+                        <li>"Seem reasonable" is undefined</li>
+                        <li>No numerical thresholds</li>
+                        <li>Claude will guess what "reasonable" means</li>
+                        <li>Inconsistent decisions</li>
+                    </ul>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="color: var(--warning); margin-bottom: 1rem;">Prompt C: Missing Examples</h4>
+                    <div class="code-block"><code>"Evaluate this loan. Provide your analysis."</code></div>
+                    <p><strong style="color: var(--text-primary);">Problems:</strong></p>
+                    <ul style="margin-left: 1.5rem; color: var(--text-secondary);">
+                        <li>No examples of approved/denied applications</li>
+                        <li>Claude doesn't know what "good" looks like</li>
+                        <li>Decisions will be inconsistent</li>
+                    </ul>
+                </div>
+
+                <div class="takeaways">
+                    <h4>Key Insight</h4>
+                    <ul>
+                        <li>Vague prompts → vague outputs</li>
+                        <li>Examples teach Claude what you want</li>
+                        <li>Specificity = consistency</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- EXERCISE 3 -->
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <div class="exercise-number">3</div>
+                <div class="exercise-title">
+                    <h2>Test Prompt Consistency</h2>
+                    <div class="exercise-meta">
+                        <span class="badge medium">Medium</span>
+                        <span>⏱️ 40 min</span>
+                        <span>⭐ Validation</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="challenge">
+                <h4>Challenge</h4>
+                <p>Write code that evaluates 3 different applications with your prompt and checks if decisions are consistent.</p>
+            </div>
+
+            <button class="solution-toggle" onclick="toggleSolution(this)">
+                <span class="solution-label">
+                    <span>💡 See Solution</span>
+                </span>
+                <span class="toggle-icon">▼</span>
+            </button>
+
+            <div class="solution-content">
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;"><strong>Key Testing Pattern:</strong> Same prompt → 3 different apps → Compare decisions</p>
+                <div class="code-block"><code><span style="color: #f59e0b;">import</span> json
+<span style="color: #f59e0b;">from</span> anthropic <span style="color: #f59e0b;">import</span> Anthropic
+
+client = Anthropic()
+SYSTEM_PROMPT = <span style="color: #34d399;">"""Your prompt here"""</span>
+
+<span style="color: #f59e0b;">def</span> <span style="color: #60a5fa;">test_loan</span>(app, test_num):
+    <span style="color: #34d399;">"""Evaluate and show result"""</span>
+    message = client.messages.create(
+        model=<span style="color: #34d399;">"claude-3-5-sonnet-20241022"</span>,
+        max_tokens=<span style="color: #a78bfa;">500</span>,
+        system=SYSTEM_PROMPT,
+        messages=[{<span style="color: #34d399;">"role"</span>: <span style="color: #34d399;">"user"</span>, <span style="color: #34d399;">"content"</span>: app}]
+    )
+    result = json.loads(message.content[<span style="color: #a78bfa;">0</span>].text)
+    <span style="color: #f59e0b;">print</span>(<span style="color: #34d399;">f"Test {test_num}: {result['decision']}"</span>)
+    <span style="color: #f59e0b;">return</span> result
+
+<span style="color: #64748b;"># Run 3 test cases</span>
+test_cases = [
+    (<span style="color: #34d399;">"Good: 750 credit, $100k income"</span>, <span style="color: #34d399;">"approved"</span>),
+    (<span style="color: #34d399;">"Borderline: 680 credit, $60k income"</span>, <span style="color: #34d399;">"review"</span>),
+    (<span style="color: #34d399;">"Risky: 580 credit, $40k income"</span>, <span style="color: #34d399;">"denied"</span>)
+]
+
+<span style="color: #f59e0b;">for</span> app, expected <span style="color: #f59e0b;">in</span> test_cases:
+    result = test_loan(app, <span style="color: #a78bfa;">1</span>)
+    <span style="color: #f59e0b;">if</span> result[<span style="color: #34d399;">'decision'</span>] == expected:
+        <span style="color: #f59e0b;">print</span>(<span style="color: #34d399;">"✅ Correct!"</span>)
+    <span style="color: #f59e0b;">else</span>:
+        <span style="color: #f59e0b;">print</span>(<span style="color: #34d399;">"❌ Unexpected"</span>)</code></div>
+
+                <div class="takeaways">
+                    <h4>Key Insight</h4>
+                    <ul>
+                        <li>Test with multiple scenarios</li>
+                        <li>Verify consistent decisions</li>
+                        <li>Check JSON format is always valid</li>
+                        <li>Edge cases reveal prompt weaknesses</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- EXERCISE 4 -->
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <div class="exercise-number">4</div>
+                <div class="exercise-title">
+                    <h2>Adapt Prompt for Different Frameworks</h2>
+                    <div class="exercise-meta">
+                        <span class="badge medium">Medium</span>
+                        <span>⏱️ 45 min</span>
+                        <span>⭐ Implementation</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="challenge">
+                <h4>Challenge</h4>
+                <p>Take your prompt and implement it in LangChain and LangGraph. Show that the same prompt works everywhere.</p>
+            </div>
+
+            <button class="solution-toggle" onclick="toggleSolution(this)">
+                <span class="solution-label">
+                    <span>💡 See Solutions</span>
+                </span>
+                <span class="toggle-icon">▼</span>
+            </button>
+
+            <div class="solution-content">
+                <h4 style="color: var(--primary); margin-bottom: 1rem;">LangChain Implementation</h4>
+                <div class="code-block"><code><span style="color: #f59e0b;">from</span> langchain.prompts <span style="color: #f59e0b;">import</span> ChatPromptTemplate
+
+prompt = ChatPromptTemplate.from_messages([
+    (<span style="color: #34d399;">"system"</span>, <span style="color: #34d399;">"Your system prompt here"</span>),
+    (<span style="color: #34d399;">"human"</span>, <span style="color: #34d399;">"{application}"</span>)
+])
+
+<span style="color: #64748b;"># Same prompt, different interface</span></code></div>
+
+                <h4 style="color: var(--primary); margin-bottom: 1rem; margin-top: 2rem;">LangGraph Implementation</h4>
+                <div class="code-block"><code><span style="color: #f59e0b;">from</span> langgraph.graph <span style="color: #f59e0b;">import</span> StateGraph
+
+graph = StateGraph(dict)
+
+<span style="color: #f59e0b;">def</span> <span style="color: #60a5fa;">evaluate_node</span>(state):
+    <span style="color: #34d399;">"""Use same prompt in node"""</span>
+    response = client.invoke({
+        <span style="color: #34d399;">"system"</span>: <span style="color: #34d399;">"Your system prompt here"</span>,
+        <span style="color: #34d399;">"user"</span>: state[<span style="color: #34d399;">"application"</span>]
+    })
+    <span style="color: #f59e0b;">return</span> response</code></div>
+
+                <div class="takeaways">
+                    <h4>Key Insight</h4>
+                    <ul>
+                        <li>Prompts are framework-agnostic</li>
+                        <li>Only the delivery method changes</li>
+                        <li>Same logic, different wrapper</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- EXERCISE 5 -->
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <div class="exercise-number">5</div>
+                <div class="exercise-title">
+                    <h2>Improve Prompt Based on Failures</h2>
+                    <div class="exercise-meta">
+                        <span class="badge hard">Hard</span>
+                        <span>⏱️ 60 min</span>
+                        <span>⭐ Mastery</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="challenge">
+                <h4>Challenge</h4>
+                <p>Imagine your prompt is approving risky loans and denying good ones. Write an improved version that handles edge cases better.</p>
+            </div>
+
+            <button class="solution-toggle" onclick="toggleSolution(this)">
+                <span class="solution-label">
+                    <span>💡 See Solution</span>
+                </span>
+                <span class="toggle-icon">▼</span>
+            </button>
+
+            <div class="solution-content">
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;"><strong>Strategy:</strong> Add explicit rules, better edge case handling, clearer thresholds.</p>
+                <div class="code-block"><code><span style="color: #f59e0b;">CRITICAL RULES:</span>
+1. ALWAYS output valid JSON
+2. ALWAYS calculate exact numbers
+3. NEVER approve if credit < 650
+4. NEVER approve if employment unverified
+5. ALWAYS escalate borderline cases
+
+<span style="color: #f59e0b;">EXCEPTION HANDLING:</span>
+IF credit < 600 AND employment unverified: 
+  → MUST ESCALATE
+
+IF debt-to-income > 0.5 AND credit < 700:
+  → MUST ESCALATE
+
+IF assets < $5k AND loan-to-income > 5:
+  → MUST REVIEW</code></div>
+
+                <div class="takeaways">
+                    <h4>Key Insight</h4>
+                    <ul>
+                        <li>NEVER and MUST are stronger than "should"</li>
+                        <li>Edge cases need explicit handling</li>
+                        <li>Escalate when unsure</li>
+                        <li>Defensive programming helps</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- EXERCISE 6 -->
+        <div class="exercise-card">
+            <div class="exercise-header">
+                <div class="exercise-number">6</div>
+                <div class="exercise-title">
+                    <h2>Write Test Cases for Your Prompt</h2>
+                    <div class="exercise-meta">
+                        <span class="badge medium">Medium</span>
+                        <span>⏱️ 30 min</span>
+                        <span>⭐ Quality Assurance</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="challenge">
+                <h4>Challenge</h4>
+                <p>Create 5 test applications that cover: clear approval, clear denial, borderline, and two edge cases.</p>
+            </div>
+
+            <button class="solution-toggle" onclick="toggleSolution(this)">
+                <span class="solution-label">
+                    <span>💡 See Solution</span>
+                </span>
+                <span class="toggle-icon">▼</span>
+            </button>
+
+            <div class="solution-content">
+                <div class="code-block"><code>test_cases = [
+    {
+        <span style="color: #34d399;">"name"</span>: <span style="color: #34d399;">"Clear Approval"</span>,
+        <span style="color: #34d399;">"credit"</span>: <span style="color: #a78bfa;">780</span>,
+        <span style="color: #34d399;">"income"</span>: <span style="color: #a78bfa;">120000</span>,
+        <span style="color: #34d399;">"debt"</span>: <span style="color: #a78bfa;">6000</span>,
+        <span style="color: #34d399;">"expected"</span>: <span style="color: #34d399;">"approved"</span>
+    },
+    {
+        <span style="color: #34d399;">"name"</span>: <span style="color: #34d399;">"Clear Denial"</span>,
+        <span style="color: #34d399;">"credit"</span>: <span style="color: #a78bfa;">550</span>,
+        <span style="color: #34d399;">"income"</span>: <span style="color: #a78bfa;">30000</span>,
+        <span style="color: #34d399;">"debt"</span>: <span style="color: #a78bfa;">18000</span>,
+        <span style="color: #34d399;">"expected"</span>: <span style="color: #34d399;">"denied"</span>
+    },
+    {
+        <span style="color: #34d399;">"name"</span>: <span style="color: #34d399;">"Borderline"</span>,
+        <span style="color: #34d399;">"credit"</span>: <span style="color: #a78bfa;">700</span>,
+        <span style="color: #34d399;">"income"</span>: <span style="color: #a78bfa;">60000</span>,
+        <span style="color: #34d399;">"debt"</span>: <span style="color: #a78bfa;">18000</span>,
+        <span style="color: #34d399;">"expected"</span>: <span style="color: #34d399;">"review"</span>
+    },
+    {
+        <span style="color: #34d399;">"name"</span>: <span style="color: #34d399;">"Edge: Unemployed"</span>,
+        <span style="color: #34d399;">"credit"</span>: <span style="color: #a78bfa;">750</span>,
+        <span style="color: #34d399;">"income"</span>: <span style="color: #a78bfa;">0</span>,
+        <span style="color: #34d399;">"expected"</span>: <span style="color: #34d399;">"review"</span>
+    },
+    {
+        <span style="color: #34d399;">"name"</span>: <span style="color: #34d399;">"Edge: High DTI"</span>,
+        <span style="color: #34d399;">"credit"</span>: <span style="color: #a78bfa;">700</span>,
+        <span style="color: #34d399;">"income"</span>: <span style="color: #a78bfa;">40000</span>,
+        <span style="color: #34d399;">"debt"</span>: <span style="color: #a78bfa;">24000</span>,
+        <span style="color: #34d399;">"expected"</span>: <span style="color: #34d399;">"review"</span>
+    }
+]</code></div>
+
+                <div class="takeaways">
+                    <h4>Key Insight</h4>
+                    <ul>
+                        <li>Test different scenarios</li>
+                        <li>Edge cases reveal weaknesses</li>
+                        <li>Comprehensive testing = robust prompts</li>
+                        <li>Expected outcomes guide testing</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- COMPLETION -->
+        <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%); border: 1px solid var(--secondary); border-radius: 0.75rem; padding: 2rem; text-align: center; margin-top: 3rem;">
+            <h2 style="color: var(--text-primary); margin-bottom: 1rem;">🎉 All Exercises Complete!</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">You've learned to:</p>
+            <ul style="list-style: none; margin-left: 0; color: var(--text-secondary); margin-bottom: 2rem;">
+                <li style="margin-bottom: 0.5rem;">✅ Write clear, specific prompts</li>
+                <li style="margin-bottom: 0.5rem;">✅ Debug broken prompts</li>
+                <li style="margin-bottom: 0.5rem;">✅ Test for consistency</li>
+                <li style="margin-bottom: 0.5rem;">✅ Handle edge cases</li>
+                <li style="margin-bottom: 0.5rem;">✅ Implement in multiple frameworks</li>
+            </ul>
+            <p style="color: var(--text-muted); font-size: 0.875rem;">Next: Context Engineering 101</p>
+        </div>
+    </div>
+
+    <script>
+        function toggleSolution(button) {
+            button.classList.toggle('open');
+            const content = button.nextElementSibling;
+            if (content && content.classList.contains('solution-content')) {
+                content.classList.toggle('open');
+            }
+        }
+    </script>
+</body>
+</html>

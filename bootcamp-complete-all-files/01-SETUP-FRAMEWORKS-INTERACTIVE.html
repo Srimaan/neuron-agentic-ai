@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 1, Day 1: Setup & Code Examples</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #1e40af;
+            --secondary: #10b981;
+            --warning: #ef4444;
+            --accent: #f59e0b;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1a1a3e 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* ========== HEADER ========== */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tagline {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        /* ========== TABS ========== */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+            overflow-x: auto;
+        }
+
+        .tab-button {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            white-space: nowrap;
+        }
+
+        .tab-button:hover {
+            color: var(--text-primary);
+        }
+
+        .tab-button.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* ========== SETUP SECTIONS ========== */
+        .setup-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .setup-section:hover {
+            border-color: var(--primary);
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.1);
+        }
+
+        .setup-section h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+            color: white;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.875rem;
+        }
+
+        .setup-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .setup-item:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ========== CODE BLOCK ========== */
+        .code-block {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .code-block code {
+            color: #e2e8f0;
+        }
+
+        /* ========== STATUS CARDS ========== */
+        .status-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-left: 4px solid;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 0.5rem 0;
+        }
+
+        .status-card.success {
+            border-left-color: var(--secondary);
+        }
+
+        .status-card.warning {
+            border-left-color: var(--warning);
+        }
+
+        .status-card.info {
+            border-left-color: var(--primary);
+        }
+
+        .status-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        /* ========== FRAMEWORK CARDS ========== */
+        .framework-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .framework-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .framework-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.1);
+        }
+
+        .framework-card h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.25rem;
+        }
+
+        .framework-card .subtitle {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .framework-feature {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .feature-check {
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        /* ========== CHECKLIST ========== */
+        .checklist {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 0.75rem 0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .checklist-item:hover {
+            transform: translateX(4px);
+        }
+
+        .checklist-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary);
+            border-radius: 0.375rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .checklist-item input:checked ~ .checklist-checkbox {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .checklist-item input:checked ~ .checklist-checkbox::after {
+            content: '✓';
+            color: white;
+            font-weight: bold;
+        }
+
+        .checklist-item input {
+            display: none;
+        }
+
+        .checklist-label {
+            flex: 1;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .checklist-item input:checked ~ .checklist-label {
+            color: var(--text-muted);
+            text-decoration: line-through;
+        }
+
+        /* ========== BUTTON ========== */
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            .tabs {
+                gap: 0.5rem;
+            }
+
+            .tab-button {
+                padding: 0.75rem 1rem;
+                font-size: 0.875rem;
+            }
+
+            .framework-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>Week 1, Day 1: Setup & Code</h1>
+            <p class="tagline">Get your environment ready & explore all 5 frameworks</p>
+        </div>
+
+        <!-- TABS -->
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab(event, 'setup')">⚙️ Setup</button>
+            <button class="tab-button" onclick="switchTab(event, 'frameworks')">💻 Code Examples</button>
+            <button class="tab-button" onclick="switchTab(event, 'checklist')">✅ Checklist</button>
+        </div>
+
+        <!-- SETUP TAB -->
+        <div id="setup" class="tab-content active">
+            <h2 style="color: var(--text-primary); margin-bottom: 1.5rem;">🚀 Setup in 8 Steps</h2>
+
+            <!-- Step 1 -->
+            <div class="setup-section">
+                <h3><span class="step-number">1</span> Check Prerequisites</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Make sure you have these installed:</p>
+                
+                <div class="status-card info">
+                    <div class="status-icon">🐍</div>
+                    <div>
+                        <strong>Python 3.11+</strong>
+                        <div style="font-size: 0.875rem; color: var(--text-muted);">Run: <code class="code-inline">python3 --version</code></div>
+                    </div>
+                </div>
+
+                <div class="status-card info">
+                    <div class="status-icon">🐳</div>
+                    <div>
+                        <strong>Docker Desktop</strong>
+                        <div style="font-size: 0.875rem; color: var(--text-muted);">Run: <code class="code-inline">docker --version</code></div>
+                    </div>
+                </div>
+
+                <div class="status-card info">
+                    <div class="status-icon">🔑</div>
+                    <div>
+                        <strong>Claude API Key</strong>
+                        <div style="font-size: 0.875rem; color: var(--text-muted);">Get from <a href="https://console.anthropic.com" style="color: var(--primary);">console.anthropic.com</a></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="setup-section">
+                <h3><span class="step-number">2</span> Create Project Directory</h3>
+                <div class="code-block">
+<code>mkdir ai-bootcamp-week1
+cd ai-bootcamp-week1</code>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="setup-section">
+                <h3><span class="step-number">3</span> Create Virtual Environment</h3>
+                <div class="code-block">
+<code>python3 -m venv venv
+source venv/bin/activate  <span style="color: var(--text-muted);"># On Windows: venv\Scripts\activate</span></code>
+                </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="setup-section">
+                <h3><span class="step-number">4</span> Install Packages</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Create <code class="code-inline">requirements.txt</code>:</p>
+                <div class="code-block">
+<code>anthropic==0.29.0
+langchain==0.1.0
+langchain-anthropic==0.1.0
+langgraph==0.0.40
+pyautogen==0.2.0
+crewai==0.1.0
+python-dotenv==1.0.0</code>
+                </div>
+                <div class="code-block">
+<code>pip install -r requirements.txt</code>
+                </div>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="setup-section">
+                <h3><span class="step-number">5</span> Configure API Key</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Create <code class="code-inline">.env</code>:</p>
+                <div class="code-block">
+<code>ANTHROPIC_API_KEY=your_api_key_here</code>
+                </div>
+            </div>
+
+            <!-- Step 6 -->
+            <div class="setup-section">
+                <h3><span class="step-number">6</span> Verify Installation</h3>
+                <div class="code-block">
+<code>python -c "import anthropic; print('✅ Anthropic SDK installed')"</code>
+                </div>
+                <div class="status-card success" style="margin-top: 1rem;">
+                    <div class="status-icon">✅</div>
+                    <div><strong>If you see</strong> "✅ Anthropic SDK installed" → You're ready!</div>
+                </div>
+            </div>
+
+            <!-- Step 7 -->
+            <div class="setup-section">
+                <h3><span class="step-number">7</span> Run First Example</h3>
+                <div class="code-block">
+<code>python 01-PROMPT-ENGINEERING-example-01-raw-sdk.py</code>
+                </div>
+                <div class="status-card success" style="margin-top: 1rem;">
+                    <div class="status-icon">🎉</div>
+                    <div>Should see loan decisions with JSON output</div>
+                </div>
+            </div>
+
+            <!-- Step 8 -->
+            <div class="setup-section">
+                <h3><span class="step-number">8</span> Explore All Examples</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Try each framework:</p>
+                <div class="code-block">
+<code><span style="color: var(--text-muted);"># Framework 1: Raw SDK (fastest, most control)</span>
+python 01-PROMPT-ENGINEERING-example-01-raw-sdk.py
+
+<span style="color: var(--text-muted);"># Framework 2: LangChain (templates, abstractions)</span>
+python 01-PROMPT-ENGINEERING-example-02-langchain.py
+
+<span style="color: var(--text-muted);"># Framework 3: LangGraph (workflows, state machines)</span>
+python 01-PROMPT-ENGINEERING-example-03-langgraph.py
+
+<span style="color: var(--text-muted);"># Framework 4: AutoGen (multi-agent)</span>
+python 01-PROMPT-ENGINEERING-example-04-autogen.py
+
+<span style="color: var(--text-muted);"># Framework 5: CrewAI (role-based teams)</span>
+python 01-PROMPT-ENGINEERING-example-05-crewai.py</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- FRAMEWORKS TAB -->
+        <div id="frameworks" class="tab-content">
+            <h2 style="color: var(--text-primary); margin-bottom: 1.5rem;">💻 5 Frameworks, Same Task</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">Each example evaluates a loan application using the same prompt, but with different frameworks.</p>
+
+            <div class="framework-grid">
+                <!-- Framework 1 -->
+                <div class="framework-card">
+                    <h3>1️⃣ Raw Python SDK</h3>
+                    <div class="subtitle">Direct Claude API</div>
+                    <div class="framework-feature">
+                        <span class="feature-check">✓</span>
+                        <span>Maximum control</span>
+                    </div>
+                    <div class="framework-feature">
+                        <span class="feature-check">✓</span>
+                        <span>No abstractions</span>
+                    </div>
+                    <div class="framework-feature">
+                        <span class="feature-check">✓</span>
+                        <span>Fast execution</span>
+                    </div>
+                    <div class="framework-feature">
+                        <span class="feature-check">✓</span>
+                        <span>Best for learning</span>
+                    </div>
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                        <strong style="color: var(--primary);">Use when:</strong>
+                        <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">Simple scripts, learning, custom needs</p>
+                    </div>
+                </div>
+
+                <!-- Framework 2 -->
+                <div class="framework-card">
+                    <h3>2️⃣ LangChain</h3>
+                    <div class="subtitle">Abstractions & templates</div>
+                    <div class="framework-feature">
+                        <span class="feature-check">✓</span>
+                        <span>Prompt templates</span>
+                    </div>
+                    <div class="framework-feature">
+                        <span class="feature-check">✓</span>
+                        <span>Chainable components</span>
+                    </div>
+                    <div class="framework-feature">
+                        <span class="feature-check">✓</span>
+                        <span>Less boilerplate</span>
+                    </div>
+                    <div class="framework-feature">
+                        <span class="feature-check">✓</span>
+                        <span>Production-ready</span>
+                    </div>
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                        <strong style="color: var(--primary);">Use when:</strong>
+                        <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">Rapid prototyping, reusable chains, most projects</p>
+                    </div>
+                </div>
+
+                <!-- Framework 3 -->
+                <div class="framework-card">
+                    <h3>3️⃣ LangGraph</h3>
+                    <div class="subtitle">State machines</div>
+                    <div class="framework-feature">
+                        <span class="feature-check">✓</span>
+                        <span>Explicit workflows</span>
+                    </div>
+                    <div class="framework-feature">
+                        <span class="feature-check">✓</span>
+                        <span>State management</span>
+                    </div>
+                    <div class="framework-feature">
+                        <span class="feature-check">✓</span>
+                        <span>Easy debugging</span>
+                    </div>
+                    <div class="framework-feature">
+                        <span class="feature-check">✓</span>
+                        <span>Agent-friendly</span>
+                    </div>
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                        <strong style="color: var(--primary);">Use when:</strong>
+                        <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">Complex workflows, multi-step agents, production</p>
+                    </div>
+                </div>
+
+                <!-- Framework 4 -->
+                <div class="framework-card">
+                    <h3>4️⃣ AutoGen</h3>
+                    <div class="subtitle">Multi-agent orchestration</div>
+                    <div class="framework-feature">
+                        <span class="feature-check">✓</span>
+                        <span>Agent conversations</span>
+                    </div>
+                    <div class="framework-feature">
+                        <span class="feature-check">✓</span>
+                        <span>Agent collaboration</span>
+                    </div>
+                    <div class="framework-feature">
+                        <span class="feature-check">✓</span>
+                        <span>Built-in communication</span>
+                    </div>
+                    <div class="framework-feature">
+                        <span class="feature-check">✓</span>
+                        <span>Complex reasoning</span>
+                    </div>
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                        <strong style="color: var(--primary);">Use when:</strong>
+                        <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">Multiple specialists needed, agent debates</p>
+                    </div>
+                </div>
+
+                <!-- Framework 5 -->
+                <div class="framework-card">
+                    <h3>5️⃣ CrewAI</h3>
+                    <div class="subtitle">Role-based teams</div>
+                    <div class="framework-feature">
+                        <span class="feature-check">✓</span>
+                        <span>Role abstractions</span>
+                    </div>
+                    <div class="framework-feature">
+                        <span class="feature-check">✓</span>
+                        <span>Task-driven</span>
+                    </div>
+                    <div class="framework-feature">
+                        <span class="feature-check">✓</span>
+                        <span>Clean API</span>
+                    </div>
+                    <div class="framework-feature">
+                        <span class="feature-check">✓</span>
+                        <span>Hierarchies</span>
+                    </div>
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                        <strong style="color: var(--primary);">Use when:</strong>
+                        <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">Team simulations, clear hierarchies, rapid prototyping</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.5rem; margin-top: 2rem;">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">🎯 Quick Comparison</h3>
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <th style="text-align: left; padding: 0.75rem; color: var(--text-primary);">Framework</th>
+                        <th style="text-align: center; padding: 0.75rem; color: var(--text-primary);">Learning Curve</th>
+                        <th style="text-align: center; padding: 0.75rem; color: var(--text-primary);">Speed</th>
+                        <th style="text-align: center; padding: 0.75rem; color: var(--text-primary);">Production Ready</th>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 0.75rem;">Raw SDK</td>
+                        <td style="text-align: center; padding: 0.75rem;">⭐⭐ Easy</td>
+                        <td style="text-align: center; padding: 0.75rem;">⚡ Fast</td>
+                        <td style="text-align: center; padding: 0.75rem;">✅ Yes</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 0.75rem;">LangChain</td>
+                        <td style="text-align: center; padding: 0.75rem;">⭐⭐⭐ Medium</td>
+                        <td style="text-align: center; padding: 0.75rem;">⚡ Fast</td>
+                        <td style="text-align: center; padding: 0.75rem;">✅ Yes</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 0.75rem;">LangGraph</td>
+                        <td style="text-align: center; padding: 0.75rem;">⭐⭐⭐ Medium</td>
+                        <td style="text-align: center; padding: 0.75rem;">⚡ Fast</td>
+                        <td style="text-align: center; padding: 0.75rem;">✅✅ Very</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 0.75rem;">AutoGen</td>
+                        <td style="text-align: center; padding: 0.75rem;">⭐⭐⭐⭐ Hard</td>
+                        <td style="text-align: center; padding: 0.75rem;">🐢 Medium</td>
+                        <td style="text-align: center; padding: 0.75rem;">✅ Yes</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.75rem;">CrewAI</td>
+                        <td style="text-align: center; padding: 0.75rem;">⭐⭐⭐ Medium</td>
+                        <td style="text-align: center; padding: 0.75rem;">🐢 Medium</td>
+                        <td style="text-align: center; padding: 0.75rem;">✅ Yes</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- CHECKLIST TAB -->
+        <div id="checklist" class="tab-content">
+            <h2 style="color: var(--text-primary); margin-bottom: 1.5rem;">✅ Progress Checklist</h2>
+
+            <div class="checklist">
+                <h3 style="color: var(--primary); margin-bottom: 1.5rem;">Before You Start</h3>
+                <label class="checklist-item">
+                    <input type="checkbox">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Installed Python 3.11+</div>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Have Claude API key</div>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Docker Desktop installed (optional)</div>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">3-8 hours available</div>
+                </label>
+            </div>
+
+            <div class="checklist">
+                <h3 style="color: var(--primary); margin-bottom: 1.5rem;">After Setup</h3>
+                <label class="checklist-item">
+                    <input type="checkbox">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Ran verification script successfully</div>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">API key is configured</div>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Can import anthropic library</div>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Project directory ready</div>
+                </label>
+            </div>
+
+            <div class="checklist">
+                <h3 style="color: var(--primary); margin-bottom: 1.5rem;">After Tutorial</h3>
+                <label class="checklist-item">
+                    <input type="checkbox">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Read 01-PROMPT-ENGINEERING-101.md</div>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Understand 5 prompt principles</div>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Know why prompts matter</div>
+                </label>
+            </div>
+
+            <div class="checklist">
+                <h3 style="color: var(--primary); margin-bottom: 1.5rem;">After Code Examples</h3>
+                <label class="checklist-item">
+                    <input type="checkbox">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Ran all 5 examples successfully</div>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">See JSON output from loan evaluation</div>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Understand framework differences</div>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Know which framework for what</div>
+                </label>
+            </div>
+
+            <div class="checklist">
+                <h3 style="color: var(--primary); margin-bottom: 1.5rem;">After Exercises</h3>
+                <label class="checklist-item">
+                    <input type="checkbox">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Completed at least 3 exercises</div>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Wrote your own loan prompt</div>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Tested prompt consistency</div>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Debugged broken prompts</div>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox">
+                    <div class="checklist-checkbox"></div>
+                    <div class="checklist-label">Created test cases</div>
+                </label>
+            </div>
+
+            <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%); border: 1px solid var(--primary); border-radius: 0.75rem; padding: 1.5rem; margin-top: 2rem; text-align: center;">
+                <h3 style="color: var(--primary); margin-bottom: 0.5rem;">🎉 Ready for Day 2?</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Next: Context Engineering 101</p>
+                <p style="color: var(--text-muted); font-size: 0.875rem;">How to structure data for Claude • Database integration • Context windows</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(e, tabName) {
+            // Hide all tab contents
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(c => c.classList.remove('active'));
+            
+            // Remove active from all buttons
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(b => b.classList.remove('active'));
+            
+            // Show selected tab and mark button as active
+            document.getElementById(tabName).classList.add('active');
+            e.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

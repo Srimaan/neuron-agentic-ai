@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Haystack — RAG Framework</title><style>*{margin:0;padding:0;box-sizing:border-box;}:root{--color-primary:#6366f1;--color-accent:#ec4899;--color-bg:#ffffff;--color-text:#1e293b;--gradient-primary:linear-gradient(135deg,#6366f1 0%,#ec4899 100%);--shadow-lg:0 20px 40px rgba(0,0,0,0.15);}body{font-family:'Inter',sans-serif;background:var(--color-bg);color:var(--color-text);line-height:1.6;}nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:16px 40px;box-shadow:0 2px 8px rgba(0,0,0,0.08);border-bottom:1px solid rgba(99,102,241,0.1);}.nav-content{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;}.nav-title{font-size:1.2rem;font-weight:700;background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}.nav-badge{background:var(--gradient-primary);color:white;padding:4px 12px;border-radius:20px;font-size:0.85rem;font-weight:600;}.hero{position:relative;min-height:60vh;display:flex;align-items:center;justify-content:center;padding:40px;background:linear-gradient(135deg,rgba(99,102,241,0.05) 0%,rgba(236,72,153,0.03) 100%);}.hero-content{position:relative;z-index:1;max-width:900px;text-align:center;}.hero h1{font-size:3.5rem;font-weight:800;margin-bottom:20px;background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}.hero p{font-size:1.3rem;color:#64748b;}main{max-width:1000px;margin:0 auto;padding:60px 40px;}section{margin-bottom:60px;}h2{font-size:2.2rem;font-weight:800;margin-bottom:30px;background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}h3{font-size:1.2rem;font-weight:700;margin-top:30px;margin-bottom:15px;}.code-container{background:#1e293b;border-radius:12px;overflow:hidden;box-shadow:var(--shadow-lg);margin:30px 0;border:1px solid rgba(99,102,241,0.2);}.code-header{background:linear-gradient(135deg,rgba(99,102,241,0.2) 0%,rgba(236,72,153,0.1) 100%);padding:12px 20px;display:flex;justify-content:space-between;align-items:center;}.code-title{color:#a5b4fc;font-family:'Fira Code',monospace;font-size:0.9rem;font-weight:600;}.copy-btn{background:rgba(99,102,241,0.2);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3);padding:4px 12px;border-radius:4px;cursor:pointer;transition:all 0.3s;}pre{padding:24px;overflow-x:auto;color:#e0e7ff;font-family:'Fira Code',monospace;font-size:0.9rem;line-height:1.6;margin:0;}.info-box{background:rgba(99,102,241,0.08);border-left:4px solid var(--color-primary);padding:20px;margin:20px 0;border-radius:8px;}.info-box h4{color:var(--color-primary);font-weight:700;margin-bottom:10px;}footer{background:linear-gradient(135deg,rgba(99,102,241,0.05) 0%,rgba(236,72,153,0.03) 100%);padding:60px 40px;text-align:center;margin-top:80px;border-top:1px solid rgba(99,102,241,0.1);}footer h3{background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px;}</style></head><body><nav><div class="nav-content"><div class="nav-title">📚 Haystack</div><div class="nav-badge">Framework 8 / 18</div></div></nav><header class="hero"><div class="hero-content"><h1>Haystack</h1><p>Deepset's RAG & Agent Framework</p></div></header><main><section><h2>What is Haystack?</h2><p>Haystack is a Python framework optimized for RAG (Retrieval-Augmented Generation) and agentic pipelines. Built by deepset, it excels at document retrieval, processing, and agent-driven workflows.</p><div class="info-box"><h4>Key Strengths</h4><p>✓ Document pipeline architecture<br>✓ RAG-first design<br>✓ Powerful document processors<br>✓ Search optimization<br>✓ Production-ready<br>✓ Great for document-heavy apps</p></div></section><section><h2>Pipeline-Based Approach</h2><div class="code-container"><div class="code-header"><div class="code-title">08_haystack_rag_agent.py</div><button class="copy-btn" onclick="copyCode(this)">Copy</button></div><pre><code>from haystack import Pipeline, Document
+from haystack.components.retrievers.in_memory import InMemoryBM25Retriever
+from haystack.components.builders import PromptBuilder
+from haystack.components.generators import OpenAIGenerator
+from haystack.document_stores.in_memory import InMemoryDocumentStore
+
+# Create document store
+doc_store = InMemoryDocumentStore()
+
+# Add example documents (loan policies)
+docs = [
+    Document(content="DTI ratio must not exceed 43%"),
+    Document(content="Credit score minimum: 600"),
+    Document(content="Income verification required")
+]
+doc_store.write_documents(docs)
+
+# Build RAG pipeline
+pipeline = Pipeline()
+pipeline.add_component("retriever", 
+    InMemoryBM25Retriever(doc_store))
+pipeline.add_component("prompt_builder", 
+    PromptBuilder(template="Based on: {{documents}}\nQuestion: {{query}}\nAnswer:"))
+pipeline.add_component("llm", 
+    OpenAIGenerator(model="claude-3-5-sonnet-20241022"))
+
+# Connect components
+pipeline.connect("retriever.documents", "prompt_builder.documents")
+pipeline.connect("prompt_builder.prompt", "llm.prompt")
+
+# Run pipeline
+result = pipeline.run({
+    "retriever": {"query": "What is maximum DTI ratio?"},
+    "prompt_builder": {"query": "What is maximum DTI ratio?"}
+})
+
+print(result)</code></pre></div></section><section><h2>When to Use Haystack</h2><div class="info-box"><h4>✓ Perfect for:</h4><p>RAG systems, document-heavy applications, search pipelines, complex retrieval workflows, enterprise search</p></div></section><section><h2>Haystack Specialization</h2><p><strong>Haystack:</strong> Document pipelines, RAG-optimized<br><strong>LangChain:</strong> Component chains, general-purpose<br><strong>Strands:</strong> Model-driven autonomy<br><strong>CrewAI:</strong> Team hierarchies</p></section></main><footer><h3>Framework 8: RAG Pipelines! 📄</h3><p>Haystack powers document-heavy AI applications.</p></footer><script>function copyCode(b){navigator.clipboard.writeText(b.closest('.code-container').querySelector('pre code').innerText);b.textContent='Copied!';setTimeout(()=>b.textContent='Copy',2000);}</script></body></html>

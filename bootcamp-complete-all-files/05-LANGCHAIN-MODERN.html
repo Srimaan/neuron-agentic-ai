@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LangChain Example — Prompt Engineering</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-primary: #6366f1;
+            --color-accent: #ec4899;
+            --color-success: #10b981;
+            --color-bg: #ffffff;
+            --color-text: #1e293b;
+            --color-text-muted: #64748b;
+            
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+            --shadow-md: 0 8px 16px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
+            
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'Fira Code', 'JetBrains Mono', monospace;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 16px 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-badge {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .hero {
+            position: relative;
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(236, 72, 153, 0.03) 100%);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15), transparent);
+            border-radius: 50%;
+            animation: floatBlob 6s ease-in-out infinite;
+        }
+
+        @keyframes floatBlob {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(30px) scale(1.05); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--color-text-muted);
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+
+        section {
+            margin-bottom: 60px;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: var(--color-text);
+        }
+
+        p {
+            margin-bottom: 16px;
+            color: var(--color-text);
+            line-height: 1.8;
+        }
+
+        .code-container {
+            background: #1e293b;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            margin: 30px 0;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .code-header {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(236, 72, 153, 0.1) 100%);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .code-title {
+            color: #a5b4fc;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(99, 102, 241, 0.3);
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+
+        pre {
+            padding: 24px;
+            overflow-x: auto;
+            color: #e0e7ff;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .info-box {
+            background: rgba(99, 102, 241, 0.08);
+            border-left: 4px solid var(--color-primary);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .info-box h4 {
+            color: var(--color-primary);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .output-box {
+            background: rgba(16, 185, 129, 0.08);
+            border-left: 4px solid var(--color-success);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .output-box h4 {
+            color: var(--color-success);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .explanation {
+            background: white;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: var(--shadow-md);
+        }
+
+        .explanation h4 {
+            color: var(--color-primary);
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        th {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        footer {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(236, 72, 153, 0.03) 100%);
+            padding: 60px 40px;
+            text-align: center;
+            margin-top: 80px;
+            border-top: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        footer h3 {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--color-primary);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            main {
+                padding: 40px 20px;
+            }
+
+            pre {
+                font-size: 0.8rem;
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-content">
+            <div class="nav-title">⛓️ LangChain Example</div>
+            <div class="nav-badge">Framework 2 / 5</div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content">
+            <h1>LangChain</h1>
+            <p>Reusable components for building LLM applications</p>
+        </div>
+    </header>
+
+    <main>
+        <section>
+            <h2>What is LangChain?</h2>
+            <p>LangChain provides abstractions like <code>ChatPromptTemplate</code>, <code>OutputParser</code>, and <code>Chain</code> that simplify building LLM applications.</p>
+
+            <div class="info-box">
+                <h4>Key Advantages</h4>
+                <p>✓ Reusable components (templates, parsers)<br>
+                ✓ Cleaner syntax than raw SDK<br>
+                ✓ Built-in support for different output formats<br>
+                ✓ Easy to compose chains of operations<br>
+                ✓ Better for production code</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Complete Example</h2>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="code-title">02_langchain_loan_evaluator.py</div>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre><code>from langchain.chat_models import ChatAnthropic
+from langchain.prompts import ChatPromptTemplate
+from langchain.output_parsers import JsonOutputParser
+from langchain.schema import HumanMessage
+import json
+
+# Initialize the model
+model = ChatAnthropic(model="claude-3-5-sonnet-20241022")
+
+# Create prompt template
+prompt = ChatPromptTemplate.from_messages([
+    (
+        "system",
+        """You are a loan evaluation system.
+
+CRITERIA SCORING:
+- Credit Score 750+: 40 points
+- Credit Score 650-749: 25 points
+- Credit Score 600-649: 10 points
+- Credit Score <600: 0 points
+
+- Debt-to-Income Ratio <0.36: 40 points
+- Debt-to-Income Ratio 0.36-0.43: 25 points
+- Debt-to-Income Ratio >0.43: 0 points
+
+- Loan Amount <50% of income: 20 points
+- Loan Amount 50-100% of income: 10 points
+- Loan Amount >100% of income: 0 points
+
+DECISION RULES:
+- Score 80+: APPROVED
+- Score 50-79: REVIEW
+- Score <50: DENIED
+
+Output ONLY valid JSON."""
+    ),
+    (
+        "user",
+        """Evaluate this application:
+Credit Score: {credit_score}
+Annual Income: ${annual_income}
+Loan Amount: ${loan_amount}
+DTI Ratio: {dti_ratio:.2f}
+
+Return JSON with: decision, score, reasoning"""
+    )
+])
+
+# Create parser
+parser = JsonOutputParser()
+
+# Create the chain
+chain = prompt | model | parser
+
+# Test applications
+test_applications = [
+    {
+        "name": "Strong Candidate",
+        "credit_score": 780,
+        "annual_income": 150000,
+        "loan_amount": 50000
+    },
+    {
+        "name": "Borderline Case",
+        "credit_score": 680,
+        "annual_income": 65000,
+        "loan_amount": 40000
+    },
+    {
+        "name": "Risky Applicant",
+        "credit_score": 580,
+        "annual_income": 30000,
+        "loan_amount": 50000
+    }
+]
+
+# Run evaluations
+if __name__ == "__main__":
+    for app in test_applications:
+        # Calculate DTI ratio
+        dti = app["loan_amount"] / app["annual_income"]
+        
+        print(f"\n{'='*50}")
+        print(f"Evaluating: {app['name']}")
+        print(f"{'-'*50}")
+        
+        # Invoke chain with data
+        result = chain.invoke({
+            "credit_score": app["credit_score"],
+            "annual_income": app["annual_income"],
+            "loan_amount": app["loan_amount"],
+            "dti_ratio": dti
+        })
+        
+        print(json.dumps(result, indent=2))</code></pre>
+            </div>
+
+            <div class="output-box">
+                <h4>Output</h4>
+                <p>Same as Raw SDK, but cleaner code!</p>
+                <pre><code>{
+  "decision": "approved",
+  "score": 95,
+  "reasoning": "Excellent credit and income ratio"
+}</code></pre>
+            </div>
+        </section>
+
+        <section>
+            <h2>Key Concepts</h2>
+
+            <div class="explanation">
+                <h4>1. ChatPromptTemplate</h4>
+                <p>Template for building prompts with placeholders. Notice the <code>{variable_name}</code> syntax — these get replaced when you invoke the chain.</p>
+            </div>
+
+            <div class="explanation">
+                <h4>2. Pipe Operator (|)</h4>
+                <p>In LangChain, <code>|</code> chains operations: <code>prompt | model | parser</code> means "create prompt → send to model → parse output"</p>
+            </div>
+
+            <div class="explanation">
+                <h4>3. JsonOutputParser</h4>
+                <p>Automatically converts Claude's JSON string response into a Python dict. No need for manual <code>json.loads()</code>!</p>
+            </div>
+
+            <div class="explanation">
+                <h4>4. Invoke</h4>
+                <p><code>chain.invoke()</code> runs the chain with your data. Returns the final parsed output.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Compared: Raw SDK vs LangChain</h2>
+
+            <table>
+                <tr>
+                    <th>Aspect</th>
+                    <th>Raw SDK</th>
+                    <th>LangChain</th>
+                </tr>
+                <tr>
+                    <td>Lines of Code</td>
+                    <td>~80</td>
+                    <td>~50</td>
+                </tr>
+                <tr>
+                    <td>Output Parsing</td>
+                    <td>Manual json.loads()</td>
+                    <td>JsonOutputParser</td>
+                </tr>
+                <tr>
+                    <td>Prompt Management</td>
+                    <td>String variable</td>
+                    <td>ChatPromptTemplate</td>
+                </tr>
+                <tr>
+                    <td>Composition</td>
+                    <td>Manual chaining</td>
+                    <td>Pipe operator (|)</td>
+                </tr>
+                <tr>
+                    <td>Reusability</td>
+                    <td>Low</td>
+                    <td>High</td>
+                </tr>
+                <tr>
+                    <td>Learning Curve</td>
+                    <td>Moderate</td>
+                    <td>Easy</td>
+                </tr>
+            </table>
+        </section>
+
+        <section>
+            <h2>Advanced: Memory & Conversation</h2>
+
+            <p>LangChain makes it easy to add memory for multi-turn conversations:</p>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="code-title">With Conversation Memory</div>
+                </div>
+                <pre><code>from langchain.memory import ConversationBufferMemory
+
+# Add memory
+memory = ConversationBufferMemory(return_messages=True)
+
+# Chain remembers context across turns
+for user_message in ["First question", "Follow-up question"]:
+    result = chain.invoke({
+        "input": user_message,
+        "chat_history": memory.buffer
+    })
+    memory.save_context(
+        {"input": user_message},
+        {"output": result}
+    )</code></pre>
+            </div>
+        </section>
+
+        <section>
+            <h2>Installation & Setup</h2>
+
+            <h3>Install LangChain</h3>
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="code-title">Terminal</div>
+                </div>
+                <pre><code>pip install langchain langchain-anthropic</code></pre>
+            </div>
+
+            <h3>Run the Example</h3>
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="code-title">Terminal</div>
+                </div>
+                <pre><code>export ANTHROPIC_API_KEY=sk-ant-your-key
+python 02_langchain_loan_evaluator.py</code></pre>
+            </div>
+        </section>
+
+        <section>
+            <h2>When to Use LangChain</h2>
+
+            <div class="explanation">
+                <h4>✓ Use LangChain When:</h4>
+                <p>You need to build production applications with reusable components, templates, and parsers. Great for teams working on similar LLM patterns.</p>
+            </div>
+
+            <div class="explanation">
+                <h4>✗ Don't Use When:</h4>
+                <p>You need maximum control or have very simple one-off tasks. Raw SDK might be simpler.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Next Framework</h2>
+
+            <div class="info-box">
+                <h4>LangGraph: State Machines</h4>
+                <p>LangGraph builds on LangChain to add state management, explicit node graphs, and multi-step workflows. Use this when your application needs complex decision logic.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <h3>Framework 2 Complete!</h3>
+        <p>You now understand LangChain. Next: LangGraph for complex workflows.</p>
+        <div class="footer-links">
+            <a href="#">📖 LangGraph</a>
+            <a href="#">🎯 AutoGen</a>
+            <a href="#">✍️ Exercises</a>
+        </div>
+    </footer>
+
+    <script>
+        function copyCode(button) {
+            const codeBlock = button.closest('.code-container').querySelector('pre code');
+            const text = codeBlock.innerText;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const original = button.textContent;
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = original;
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

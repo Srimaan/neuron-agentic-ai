@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Engineering Exercises — Week 1, Day 1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-primary: #6366f1;
+            --color-primary-light: #e0e7ff;
+            --color-accent: #ec4899;
+            --color-accent-2: #f59e0b;
+            --color-success: #10b981;
+            --color-danger: #ef4444;
+            --color-bg: #ffffff;
+            --color-bg-light: #f8fafc;
+            --color-bg-lighter: #e2e8f0;
+            --color-text: #1e293b;
+            --color-text-muted: #64748b;
+            
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+            --gradient-accent: linear-gradient(135deg, #ec4899 0%, #f59e0b 100%);
+            
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 8px 16px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
+            
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'Fira Code', 'JetBrains Mono', monospace;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+            animation: gradientShift 8s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(10deg); }
+        }
+
+        /* NAVIGATION */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 16px 40px;
+            box-shadow: var(--shadow-sm);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--color-text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--color-primary);
+        }
+
+        /* HERO */
+        .hero {
+            position: relative;
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(236, 72, 153, 0.03) 100%);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15), transparent);
+            border-radius: 50%;
+            animation: floatBlob 6s ease-in-out infinite;
+        }
+
+        @keyframes floatBlob {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(30px) scale(1.05); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--color-text-muted);
+            margin-bottom: 30px;
+        }
+
+        /* MAIN */
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+
+        section {
+            margin-bottom: 60px;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            color: var(--color-text);
+        }
+
+        p {
+            margin-bottom: 16px;
+            color: var(--color-text);
+            line-height: 1.8;
+        }
+
+        /* EXERCISE CARD */
+        .exercise-card {
+            background: white;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .exercise-card:hover {
+            border-color: var(--color-primary);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+        }
+
+        .exercise-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .exercise-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .exercise-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--color-text);
+        }
+
+        .difficulty {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        .difficulty.easy {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--color-success);
+        }
+
+        .difficulty.medium {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--color-accent-2);
+        }
+
+        .difficulty.hard {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--color-danger);
+        }
+
+        .time-estimate {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+
+        .exercise-content {
+            border-top: 1px solid rgba(99, 102, 241, 0.1);
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+
+        .exercise-description {
+            color: var(--color-text);
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+
+        .task-list {
+            background: rgba(99, 102, 241, 0.05);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid var(--color-primary);
+        }
+
+        .task-list ul {
+            list-style: none;
+            margin: 0;
+        }
+
+        .task-list li {
+            padding: 8px 0;
+            padding-left: 24px;
+            position: relative;
+            color: var(--color-text);
+        }
+
+        .task-list li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--color-primary);
+            font-weight: 700;
+        }
+
+        /* SOLUTION */
+        .solution-header {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--color-success);
+            padding: 16px;
+            margin-top: 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            color: var(--color-success);
+        }
+
+        .solution-header::before {
+            content: '▶';
+            transition: transform 0.3s;
+        }
+
+        .solution-header.open::before {
+            transform: rotate(90deg);
+        }
+
+        .solution-content {
+            display: none;
+            background: rgba(16, 185, 129, 0.05);
+            padding: 20px;
+            margin-top: 12px;
+            border-radius: 8px;
+            border-left: 4px solid var(--color-success);
+        }
+
+        .solution-content.open {
+            display: block;
+        }
+
+        /* CODE */
+        pre {
+            background: #1e293b;
+            color: #e0e7ff;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            box-shadow: var(--shadow-md);
+        }
+
+        code {
+            font-family: var(--font-mono);
+            background: rgba(99, 102, 241, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: var(--color-primary);
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: #a5b4fc;
+        }
+
+        /* FOOTER */
+        footer {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(236, 72, 153, 0.03) 100%);
+            padding: 60px 40px;
+            text-align: center;
+            margin-top: 80px;
+            border-top: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        footer h3 {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--color-primary);
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            color: var(--color-accent);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+            }
+
+            main {
+                padding: 40px 20px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav>
+        <div class="nav-content">
+            <div class="nav-title">🤖 AI Bootcamp</div>
+            <ul class="nav-links">
+                <li><a href="#exercises">Exercises</a></li>
+                <li><a href="#solutions">Solutions</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <header class="hero">
+        <div class="hero-content">
+            <h1>Prompt Engineering Exercises</h1>
+            <p>6 exercises to master prompt engineering — Easy to Hard</p>
+        </div>
+    </header>
+
+    <main>
+        <section id="exercises">
+            <h2>📝 Exercises</h2>
+
+            <!-- EXERCISE 1 -->
+            <div class="exercise-card">
+                <div class="exercise-header">
+                    <div class="exercise-number">1</div>
+                    <div class="exercise-title">Write a Loan Evaluation Prompt</div>
+                    <div class="difficulty easy">Easy</div>
+                </div>
+                <div class="time-estimate">⏱️ 30 minutes</div>
+                <div class="exercise-content">
+                    <div class="exercise-description">
+                        <strong>Goal:</strong> Write a prompt from scratch that evaluates loan applications.<br><br>
+                        <strong>Requirements:</strong>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>Define the role (loan officer)</li>
+                            <li>Specify the criteria (credit score, income, DTI)</li>
+                            <li>Define the decision threshold</li>
+                            <li>Specify JSON output format</li>
+                        </ul>
+                    </div>
+
+                    <div class="task-list">
+                        <strong>Task:</strong>
+                        <ul>
+                            <li>Create a prompt that evaluates: credit score, annual income, desired loan amount</li>
+                            <li>Output decision + score (0-100) + reasoning</li>
+                            <li>Test it with a sample application</li>
+                        </ul>
+                    </div>
+
+                    <div class="solution-header" onclick="toggleSolution(this)">
+                        ✓ Show Solution
+                    </div>
+                    <div class="solution-content">
+                        <p><strong>Example Solution:</strong></p>
+                        <pre><code>You are a loan evaluation system.
+
+CRITERIA:
+- Credit Score 750+: Excellent (40 points)
+- Credit Score 650-749: Good (25 points)
+- Credit Score 600-649: Fair (10 points)
+- Credit Score <600: Poor (0 points)
+
+- Debt-to-Income Ratio <0.36: Excellent (40 points)
+- Debt-to-Income Ratio 0.36-0.43: Good (25 points)
+- Debt-to-Income Ratio >0.43: Poor (0 points)
+
+DECISION RULES:
+- Score 80+: APPROVED
+- Score 50-79: REVIEW
+- Score <50: DENIED
+
+INPUT: JSON with credit_score, annual_income, loan_amount
+OUTPUT: JSON with decision, score, reasoning
+
+Evaluate this application: 
+{applicant data}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXERCISE 2 -->
+            <div class="exercise-card">
+                <div class="exercise-header">
+                    <div class="exercise-number">2</div>
+                    <div class="exercise-title">Identify Problems in Broken Prompts</div>
+                    <div class="difficulty easy">Easy</div>
+                </div>
+                <div class="time-estimate">⏱️ 20 minutes</div>
+                <div class="exercise-content">
+                    <div class="exercise-description">
+                        <strong>Goal:</strong> Find what's wrong with these prompts and explain why.<br><br>
+                        <strong>Broken Prompt 1:</strong>
+                        <pre><code>"Evaluate this loan. Is it good?"</code></pre>
+
+                        <strong>Broken Prompt 2:</strong>
+                        <pre><code>"You are a loan officer. Decide if this should be approved or denied. Be objective and fair."</code></pre>
+
+                        <strong>Broken Prompt 3:</strong>
+                        <pre><code>"Look at this application and tell me your thoughts about whether to approve it. Consider relevant factors."</code></pre>
+                    </div>
+
+                    <div class="task-list">
+                        <strong>For each prompt, identify:</strong>
+                        <ul>
+                            <li>What's vague or missing?</li>
+                            <li>What criteria aren't defined?</li>
+                            <li>What format issues exist?</li>
+                            <li>How would you fix it?</li>
+                        </ul>
+                    </div>
+
+                    <div class="solution-header" onclick="toggleSolution(this)">
+                        ✓ Show Solution
+                    </div>
+                    <div class="solution-content">
+                        <p><strong>Issues Found:</strong></p>
+                        <p><strong>Prompt 1:</strong> "Is it good?" is vague. No criteria defined. No format specified. No thresholds.</p>
+                        <p><strong>Prompt 2:</strong> "Be objective" doesn't define HOW. No scoring system. No clear thresholds. Output format unclear.</p>
+                        <p><strong>Prompt 3:</strong> "Relevant factors" is vague. No specific criteria. No examples. No JSON format.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXERCISE 3 -->
+            <div class="exercise-card">
+                <div class="exercise-header">
+                    <div class="exercise-number">3</div>
+                    <div class="exercise-title">Test Prompt Consistency</div>
+                    <div class="difficulty medium">Medium</div>
+                </div>
+                <div class="time-estimate">⏱️ 40 minutes</div>
+                <div class="exercise-content">
+                    <div class="exercise-description">
+                        <strong>Goal:</strong> Create a test harness to verify your prompt works consistently.<br><br>
+                        Write code that:
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>Tests 3 applications multiple times</li>
+                            <li>Tracks if decisions are consistent</li>
+                            <li>Reports any inconsistencies</li>
+                        </ul>
+                    </div>
+
+                    <div class="task-list">
+                        <strong>Task:</strong>
+                        <ul>
+                            <li>Create 3 test cases (approve, deny, borderline)</li>
+                            <li>Call Claude API 3 times for each</li>
+                            <li>Check if results are consistent</li>
+                            <li>Report consistency percentage</li>
+                        </ul>
+                    </div>
+
+                    <div class="solution-header" onclick="toggleSolution(this)">
+                        ✓ Show Solution
+                    </div>
+                    <div class="solution-content">
+                        <pre><code>from anthropic import Anthropic
+import json
+
+client = Anthropic()
+
+test_cases = [
+    {"credit_score": 780, "income": 120000, "loan": 40000},
+    {"credit_score": 580, "income": 30000, "loan": 50000},
+    {"credit_score": 650, "income": 60000, "loan": 35000},
+]
+
+for test_num, app in enumerate(test_cases, 1):
+    decisions = []
+    for attempt in range(3):
+        response = client.messages.create(
+            model="claude-3-5-sonnet-20241022",
+            max_tokens=200,
+            messages=[{
+                "role": "user",
+                "content": f"Evaluate: {json.dumps(app)}"
+            }]
+        )
+        result = json.loads(response.content[0].text)
+        decisions.append(result["decision"])
+    
+    consistency = len(set(decisions)) == 1
+    print(f"Test {test_num}: {'✓' if consistency else '✗'} {decisions}")</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXERCISE 4 -->
+            <div class="exercise-card">
+                <div class="exercise-header">
+                    <div class="exercise-number">4</div>
+                    <div class="exercise-title">Adapt Prompt to Different Frameworks</div>
+                    <div class="difficulty medium">Medium</div>
+                </div>
+                <div class="time-estimate">⏱️ 45 minutes</div>
+                <div class="exercise-content">
+                    <div class="exercise-description">
+                        <strong>Goal:</strong> Take your prompt and implement it in 2 different frameworks.<br><br>
+                        Choose 2 of: LangChain, LangGraph, AutoGen, CrewAI
+                    </div>
+
+                    <div class="task-list">
+                        <strong>Task:</strong>
+                        <ul>
+                            <li>Implement prompt in Framework 1</li>
+                            <li>Implement prompt in Framework 2</li>
+                            <li>Test both with same application</li>
+                            <li>Compare results</li>
+                        </ul>
+                    </div>
+
+                    <div class="solution-header" onclick="toggleSolution(this)">
+                        ✓ Show Solution (LangChain)
+                    </div>
+                    <div class="solution-content">
+                        <pre><code>from langchain.chat_models import ChatAnthropic
+from langchain.prompts import ChatPromptTemplate
+from langchain.output_parsers import JsonOutputParser
+
+model = ChatAnthropic(model="claude-3-5-sonnet-20241022")
+parser = JsonOutputParser()
+
+prompt = ChatPromptTemplate.from_messages([
+    ("system", "You are a loan evaluation system..."),
+    ("user", "Evaluate this application: {application}")
+])
+
+chain = prompt | model | parser
+
+result = chain.invoke({"application": json.dumps(app)})</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXERCISE 5 -->
+            <div class="exercise-card">
+                <div class="exercise-header">
+                    <div class="exercise-number">5</div>
+                    <div class="exercise-title">Improve Based on Failures</div>
+                    <div class="difficulty hard">Hard</div>
+                </div>
+                <div class="time-estimate">⏱️ 60 minutes</div>
+                <div class="exercise-content">
+                    <div class="exercise-description">
+                        <strong>Goal:</strong> Create production-grade prompt with edge cases handled.<br><br>
+                        Handle these edge cases:
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>Missing employment verification</li>
+                            <li>Recent bankruptcies</li>
+                            <li>High debt-to-income ratio but high income</li>
+                            <li>Very young credit history (< 1 year)</li>
+                        </ul>
+                    </div>
+
+                    <div class="task-list">
+                        <strong>Task:</strong>
+                        <ul>
+                            <li>Create comprehensive prompt with all edge cases</li>
+                            <li>Test with 5 edge case applications</li>
+                            <li>Verify decisions make business sense</li>
+                            <li>Document your decision logic</li>
+                        </ul>
+                    </div>
+
+                    <div class="solution-header" onclick="toggleSolution(this)">
+                        ✓ Show Solution
+                    </div>
+                    <div class="solution-content">
+                        <pre><code>EDGE CASES:
+1. Missing Employment: AUTO-REVIEW (cannot approve without verification)
+2. Recent Bankruptcy (<2 years): MAX 50 points regardless of other factors
+3. DTI >0.50: AUTO-DENY unless approved by manager flag
+4. Credit History <1 year: MAX 60 points (insufficient history)
+5. Multiple Recent Inquiries (>3 in 6 months): -10 points per inquiry
+
+These rules take precedence over standard scoring.</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXERCISE 6 -->
+            <div class="exercise-card">
+                <div class="exercise-header">
+                    <div class="exercise-number">6</div>
+                    <div class="exercise-title">Write Comprehensive Test Cases</div>
+                    <div class="difficulty medium">Medium</div>
+                </div>
+                <div class="time-estimate">⏱️ 30 minutes</div>
+                <div class="exercise-content">
+                    <div class="exercise-description">
+                        <strong>Goal:</strong> Create 5 test cases covering the full decision spectrum.<br><br>
+                        Your tests should cover:
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>Clear approve case</li>
+                            <li>Clear deny case</li>
+                            <li>Borderline case</li>
+                            <li>Edge case (missing data)</li>
+                            <li>Exception case (recent bankruptcy)</li>
+                        </ul>
+                    </div>
+
+                    <div class="task-list">
+                        <strong>Task:</strong>
+                        <ul>
+                            <li>Define 5 realistic applicants</li>
+                            <li>Specify expected decision for each</li>
+                            <li>Run through your prompt</li>
+                            <li>Verify results match expectations</li>
+                        </ul>
+                    </div>
+
+                    <div class="solution-header" onclick="toggleSolution(this)">
+                        ✓ Show Solution
+                    </div>
+                    <div class="solution-content">
+                        <pre><code>test_cases = [
+    {
+        "name": "Strong Approval",
+        "credit": 780, "income": 150000, "loan": 50000,
+        "expected": "approved", "min_score": 80
+    },
+    {
+        "name": "Clear Denial",
+        "credit": 550, "income": 25000, "loan": 60000,
+        "expected": "denied", "max_score": 50
+    },
+    {
+        "name": "Borderline Review",
+        "credit": 680, "income": 65000, "loan": 40000,
+        "expected": "review", "score_range": [50, 79]
+    },
+    {
+        "name": "Missing Employment",
+        "credit": 700, "income": None, "loan": 30000,
+        "expected": "review"
+    },
+    {
+        "name": "Recent Bankruptcy",
+        "credit": 650, "income": 80000, "loan": 25000,
+        "bankruptcy_years_ago": 1, "expected": "review"
+    }
+]</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <h3>Ready to Test Your Skills?</h3>
+        <p>Work through each exercise in order. Solutions are provided to guide you.</p>
+        <div class="footer-links">
+            <a href="#">📖 Tutorial</a>
+            <a href="#">💻 Code Examples</a>
+            <a href="#">⚙️ Setup</a>
+        </div>
+    </footer>
+
+    <script>
+        function toggleSolution(header) {
+            const content = header.nextElementSibling;
+            header.classList.toggle('open');
+            content.classList.toggle('open');
+        }
+    </script>
+</body>
+</html>

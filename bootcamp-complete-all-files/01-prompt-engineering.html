@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Engineering 101 - Production AI Architect</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.8;
+        }
+        .wrapper { max-width: 860px; margin: 0 auto; padding: 40px 20px; }
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #667eea;
+        }
+        h1 {
+            font-size: 2.5em;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .chapter-meta {
+            color: #999;
+            font-size: 0.95em;
+        }
+        h2 {
+            font-size: 1.8em;
+            color: #667eea;
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+        h3 {
+            font-size: 1.3em;
+            color: #333;
+            margin: 30px 0 15px 0;
+        }
+        p {
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+        .code-block {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .example {
+            background: #f0f4ff;
+            border-left: 4px solid #764ba2;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .example-title {
+            font-weight: 700;
+            color: #764ba2;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-size: 0.9em;
+        }
+        .good { border-left-color: #28a745; background: #f0fdf4; }
+        .bad { border-left-color: #dc3545; background: #fdf4f4; }
+        .tip {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .tip::before {
+            content: "💡 TIP: ";
+            font-weight: 700;
+            color: #856404;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #f8f9fa;
+            font-weight: 700;
+            color: #667eea;
+        }
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px solid #eee;
+        }
+        .btn {
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-size: 1em;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: #eee;
+            color: #333;
+        }
+        .btn-secondary:hover {
+            background: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+            <h1>Prompt Engineering 101</h1>
+            <p class="chapter-meta">Chapter 1 | Week 1: Agent Framework Foundations</p>
+        </header>
+
+        <h2>What is Prompt Engineering?</h2>
+        <p>Prompt engineering is the art and science of crafting inputs to LLMs that consistently produce desired outputs. It bridges the gap between what you want the model to do and what the model actually understands.</p>
+        
+        <p>Think of it like:</p>
+        <ul>
+            <li><strong>Bad analogy:</strong> "Please write good code" - too vague</li>
+            <li><strong>Good analogy:</strong> "Write Python code to validate email format, include type hints, and add unit tests" - specific, actionable</li>
+        </ul>
+
+        <h2>Core Principles</h2>
+        
+        <h3>1. Clarity & Specificity</h3>
+        <p>The more specific your prompt, the better the output. Vague prompts lead to vague results.</p>
+        
+        <div class="example bad">
+            <div class="example-title">❌ Unclear Prompt</div>
+            <div class="code-block">
+"Write a function for data processing"
+            </div>
+        </div>
+
+        <div class="example good">
+            <div class="example-title">✅ Clear Prompt</div>
+            <div class="code-block">
+"Write a Python function that takes a CSV file path, 
+reads customer data, filters records where age > 21, 
+and returns a sorted list by purchase amount (descending). 
+Include error handling for missing files."
+            </div>
+        </div>
+
+        <h3>2. Context is Everything</h3>
+        <p>Provide background information about the domain, problem constraints, and expected outcomes.</p>
+        
+        <div class="example good">
+            <div class="example-title">✅ Prompt with Context</div>
+            <div class="code-block">
+"You are a loan evaluation system for a fintech company.
+Customer data includes: credit_score (600-800), 
+annual_income ($20k-$500k), employment_years (0-50).
+
+Rules:
+- Minimum credit: 600
+- Maximum debt-to-income: 43%
+- Minimum employment: 2 years
+
+Evaluate this customer and return APPROVE or DENY with reasoning."
+            </div>
+        </div>
+
+        <h3>3. Structure & Format</h3>
+        <p>Tell the model exactly what format you want for the output.</p>
+        
+        <div class="example good">
+            <div class="example-title">✅ Structured Output Request</div>
+            <div class="code-block">
+"Return your response as JSON:
+{
+  \"decision\": \"APPROVE\" or \"DENY\",
+  \"confidence\": 0.0-1.0,
+  \"reasoning\": \"...\",
+  \"risks\": [\"...\"]
+}"
+            </div>
+        </div>
+
+        <h3>4. Role Definition</h3>
+        <p>Tell the model what role to play or expertise to use.</p>
+        
+        <table>
+            <tr>
+                <th>Role</th>
+                <th>Prompt Start</th>
+            </tr>
+            <tr>
+                <td>Expert Developer</td>
+                <td>"You are a senior software architect..."</td>
+            </tr>
+            <tr>
+                <td>Domain Specialist</td>
+                <td>"You are a credit risk analyst..."</td>
+            </tr>
+            <tr>
+                <td>Critic</td>
+                <td>"Review this code and identify flaws..."</td>
+            </tr>
+            <tr>
+                <td>Teacher</td>
+                <td>"Explain this concept to a beginner..."</td>
+            </tr>
+        </table>
+
+        <h2>Advanced Patterns</h2>
+
+        <h3>Chain-of-Thought (CoT)</h3>
+        <p>Ask the model to show its reasoning step-by-step before answering.</p>
+        
+        <div class="code-block">
+"Let me think through this step-by-step:
+1. First, I'll analyze...
+2. Then I'll evaluate...
+3. Finally, I'll conclude..."
+        </div>
+
+        <h3>Few-Shot Learning</h3>
+        <p>Provide examples of the pattern you want followed.</p>
+        
+        <div class="example">
+            <div class="example-title">Few-Shot Prompt</div>
+            <div class="code-block">
+Examples:
+Input: "Customer credit 580"
+Output: {"eligible": false, "reason": "Below minimum"}
+
+Input: "Customer credit 720"
+Output: {"eligible": true, "reason": "Meets all criteria"}
+
+Now evaluate:
+Input: "Customer credit 650"
+Output:
+            </div>
+        </div>
+
+        <h3>System vs User Messages</h3>
+        <p>Use system messages for instructions and user messages for requests.</p>
+        
+        <table>
+            <tr>
+                <th>Type</th>
+                <th>Purpose</th>
+                <th>Example</th>
+            </tr>
+            <tr>
+                <td>System</td>
+                <td>Setup & constraints</td>
+                <td>"You are a helpful assistant..."</td>
+            </tr>
+            <tr>
+                <td>User</td>
+                <td>Specific request</td>
+                <td>"Please evaluate this customer..."</td>
+            </tr>
+        </table>
+
+        <div class="tip">
+            Always structure prompts with clear sections: Role → Context → Task → Format
+        </div>
+
+        <h2>Prompt Template</h2>
+        
+        <div class="code-block">
+# ROLE
+You are a [specific role/expertise]
+
+# CONTEXT
+[Background information about the domain]
+[Relevant constraints or rules]
+
+# TASK
+[Specific action to perform]
+[Any decision criteria]
+
+# OUTPUT FORMAT
+[Expected format - JSON, markdown, etc.]
+
+# EXAMPLE
+[One or two examples of good outputs]
+
+# CONSTRAINTS
+- [Constraint 1]
+- [Constraint 2]
+        </div>
+
+        <h2>Common Mistakes to Avoid</h2>
+        <ul>
+            <li>❌ Being too vague - "Do something smart"</li>
+            <li>❌ Not specifying output format - expect confusion</li>
+            <li>❌ Forgetting context - model doesn't know your domain</li>
+            <li>❌ Mixed instructions - keep role, task, and format separate</li>
+            <li>❌ No examples - show don't just tell</li>
+            <li>❌ Contradictory constraints - be consistent</li>
+        </ul>
+
+        <h2>Testing Your Prompts</h2>
+        <p>Good prompts produce consistent results. Test by:</p>
+        <ol>
+            <li>Running same prompt 3-5 times with different inputs</li>
+            <li>Checking if outputs match expected format</li>
+            <li>Verifying reasoning is sound</li>
+            <li>Testing edge cases (empty data, extreme values)</li>
+            <li>Comparing with baseline (simpler prompt)</li>
+        </ol>
+
+        <div class="tip">
+            Spend 80% time on prompt design, 20% on code. A great prompt > average code with bad prompt.
+        </div>
+
+        <h2>Key Takeaways</h2>
+        <ul>
+            <li>Specificity beats brevity - be detailed</li>
+            <li>Context is crucial - explain the domain</li>
+            <li>Format matters - tell model exactly how to respond</li>
+            <li>Role definition helps - give expertise level</li>
+            <li>Examples work - show patterns, don't just describe</li>
+            <li>Test everything - consistency is key</li>
+        </ul>
+
+        <div class="nav-buttons">
+            <a href="index.html" class="btn btn-secondary">← Back to Index</a>
+            <a href="02-agent-frameworks.html" class="btn btn-primary">Next Chapter →</a>
+        </div>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semantic Kernel — AI Framework</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --color-primary: #6366f1;
+            --color-accent: #ec4899;
+            --color-success: #10b981;
+            --color-bg: #ffffff;
+            --color-text: #1e293b;
+            --color-text-muted: #64748b;
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+            --shadow-md: 0 8px 16px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'Fira Code', 'JetBrains Mono', monospace;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: var(--font-body); background: var(--color-bg); color: var(--color-text); line-height: 1.6; }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        nav { position: sticky; top: 0; z-index: 100; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 16px 40px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); border-bottom: 1px solid rgba(99, 102, 241, 0.1); }
+        .nav-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .nav-title { font-size: 1.2rem; font-weight: 700; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .nav-badge { background: var(--gradient-primary); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+        .hero { position: relative; min-height: 60vh; display: flex; align-items: center; justify-content: center; padding: 40px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(236, 72, 153, 0.03) 100%); }
+        .hero::before { content: ''; position: absolute; top: -50%; right: -10%; width: 600px; height: 600px; background: radial-gradient(circle, rgba(99, 102, 241, 0.15), transparent); border-radius: 50%; animation: floatBlob 6s ease-in-out infinite; }
+        @keyframes floatBlob { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(30px) scale(1.05); } }
+        .hero-content { position: relative; z-index: 1; max-width: 900px; text-align: center; }
+        .hero h1 { font-size: 3.5rem; font-weight: 800; margin-bottom: 20px; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .hero p { font-size: 1.3rem; color: var(--color-text-muted); }
+        main { max-width: 1000px; margin: 0 auto; padding: 60px 40px; }
+        section { margin-bottom: 60px; }
+        h2 { font-size: 2.2rem; font-weight: 800; margin-bottom: 30px; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        h3 { font-size: 1.2rem; font-weight: 700; margin-top: 30px; margin-bottom: 15px; color: var(--color-text); }
+        p { margin-bottom: 16px; }
+        .code-container { background: #1e293b; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-lg); margin: 30px 0; border: 1px solid rgba(99, 102, 241, 0.2); }
+        .code-header { background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(236, 72, 153, 0.1) 100%); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(99, 102, 441, 0.2); }
+        .code-title { color: #a5b4fc; font-family: var(--font-mono); font-size: 0.9rem; font-weight: 600; }
+        .copy-btn { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.3); padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; transition: all 0.3s; }
+        .copy-btn:hover { background: rgba(99, 102, 241, 0.3); border-color: rgba(99, 102, 241, 0.5); }
+        pre { padding: 24px; overflow-x: auto; color: #e0e7ff; font-family: var(--font-mono); font-size: 0.9rem; line-height: 1.6; margin: 0; }
+        .info-box { background: rgba(99, 102, 241, 0.08); border-left: 4px solid var(--color-primary); padding: 20px; margin: 20px 0; border-radius: 8px; }
+        .info-box h4 { color: var(--color-primary); font-weight: 700; margin-bottom: 10px; }
+        footer { background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(236, 72, 153, 0.03) 100%); padding: 60px 40px; text-align: center; margin-top: 80px; border-top: 1px solid rgba(99, 102, 241, 0.1); }
+        footer h3 { background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 20px; }
+        .footer-links { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
+        .footer-links a { color: var(--color-primary); text-decoration: none; }
+        @media (max-width: 768px) { .hero h1 { font-size: 2.5rem; } main { padding: 40px 20px; } pre { font-size: 0.8rem; padding: 16px; } }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-content">
+            <div class="nav-title">🧩 Semantic Kernel</div>
+            <div class="nav-badge">Framework 7 / 18</div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content">
+            <h1>Semantic Kernel</h1>
+            <p>Microsoft's Plugin-Based Framework for Enterprise AI</p>
+        </div>
+    </header>
+
+    <main>
+        <section>
+            <h2>What is Semantic Kernel?</h2>
+            <p>Microsoft's Semantic Kernel provides a plugin architecture for building AI applications. Plugins are reusable components that encapsulate LLM calls and tools, making them highly composable and shareable.</p>
+
+            <div class="info-box">
+                <h4>Key Strengths</h4>
+                <p>✓ Enterprise .NET + Python support<br>
+                ✓ Plugin-based architecture (reusable components)<br>
+                ✓ Memory management built-in<br>
+                ✓ Azure integration<br>
+                ✓ Large ecosystem<br>
+                ✓ Great for corporate environments</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Plugin-Based Architecture</h2>
+
+            <p>Semantic Kernel organizes functionality into plugins—reusable, composable units:</p>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="code-title">07_semantic_kernel_loan_evaluator.py</div>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre><code>from semantic_kernel import Kernel
+from semantic_kernel.connectors.ai.open_ai import OpenAIChatCompletion
+import semantic_kernel.core_plugins as core_plugins
+
+# Initialize kernel
+kernel = Kernel()
+kernel.add_chat_service(
+    "claude",
+    OpenAIChatCompletion(
+        model_id="claude-3-5-sonnet-20241022",
+        api_key="sk-ant-..."
+    )
+)
+
+# Create plugins (reusable functions)
+class CreditPlugin:
+    @kernel.function_name("check_credit")
+    def check_credit_score(self, score: int) -> str:
+        """Evaluate credit score"""
+        if score >= 750:
+            return "Excellent (40 points)"
+        elif score >= 650:
+            return "Good (25 points)"
+        else:
+            return "Poor (0 points)"
+
+class LoanPlugin:
+    @kernel.function_name("evaluate_loan")
+    def evaluate(self, credit: str, income: float, 
+                 loan: float) -> str:
+        """Main evaluation logic"""
+        dti = loan / income
+        return f"Credit: {credit}, DTI: {dti:.2f}"
+
+# Register plugins
+kernel.register_plugin(CreditPlugin(), "credit")
+kernel.register_plugin(LoanPlugin(), "loan")
+
+# Use plugins
+prompt = """Evaluate this loan:
+Credit Score: {credit_score}
+Income: ${income}
+Loan: ${loan_amount}
+
+Use the credit and loan plugins to assess."""
+
+result = kernel.invoke(
+    prompt,
+    credit_score=780,
+    income=150000,
+    loan_amount=50000
+)
+
+print(result)</code></pre>
+            </div>
+        </section>
+
+        <section>
+            <h2>When to Use Semantic Kernel</h2>
+
+            <div class="info-box">
+                <h4>✓ Perfect for:</h4>
+                <p>Enterprise .NET organizations, plugin-based systems, corporate memory needs, Azure deployments, teams needing shared components</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Semantic Kernel vs Others</h2>
+
+            <p><strong>Semantic Kernel:</strong> Plugin architecture, enterprise-focused, .NET native<br>
+            <strong>LangChain:</strong> Component chains, Python-first, rapid development<br>
+            <strong>Strands:</strong> Model-driven autonomy, AWS-native<br>
+            <strong>CrewAI:</strong> Role-based teams, sequential tasks</p>
+        </section>
+    </main>
+
+    <footer>
+        <h3>Framework 7: Enterprise Plugins! 🏢</h3>
+        <p>Semantic Kernel brings plugin architecture to enterprise AI.</p>
+        <div class="footer-links">
+            <a href="#">📊 Comparison</a>
+            <a href="#">🔗 Next</a>
+        </div>
+    </footer>
+
+    <script>
+        function copyCode(button) {
+            const code = button.closest('.code-container').querySelector('pre code');
+            navigator.clipboard.writeText(code.innerText).then(() => {
+                const orig = button.textContent;
+                button.textContent = 'Copied!';
+                setTimeout(() => { button.textContent = orig; }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

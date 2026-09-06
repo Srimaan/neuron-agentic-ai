@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 1, Day 1: Prompt Engineering 101</title>
+    <style>
+        /* ========== DESIGN TOKENS ========== */
+        :root {
+            /* Color Palette */
+            --primary: #3b82f6;        /* Blue (CCA-F) */
+            --primary-dark: #1e40af;   /* Dark blue */
+            --secondary: #10b981;      /* Green (Solutions) */
+            --warning: #ef4444;        /* Red (Errors) */
+            --accent: #f59e0b;         /* Amber (Tips) */
+            
+            --bg-dark: #0f172a;        /* Dark navy */
+            --bg-card: #1e293b;        /* Slate */
+            --bg-code: #0f172a;        /* Code bg */
+            
+            --text-primary: #f1f5f9;   /* Light gray */
+            --text-secondary: #cbd5e1; /* Medium gray */
+            --text-muted: #94a3b8;     /* Muted gray */
+            
+            --border: #334155;         /* Border color */
+            
+            /* Typography */
+            --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-code: 'Fira Code', 'Courier New', monospace;
+            
+            /* Spacing */
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+            
+            /* Border Radius */
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ========== RESET & BASE ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            letter-spacing: -0.01em;
+        }
+
+        /* ========== TYPOGRAPHY ========== */
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: var(--spacing-xl);
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-top: var(--spacing-2xl);
+            margin-bottom: var(--spacing-lg);
+            color: var(--text-primary);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 2px solid var(--border);
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-top: var(--spacing-xl);
+            margin-bottom: var(--spacing-md);
+            color: var(--primary);
+        }
+
+        h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-top: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+            color: var(--text-primary);
+        }
+
+        p {
+            margin-bottom: var(--spacing-md);
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.2s;
+            font-weight: 500;
+        }
+
+        a:hover {
+            color: #60a5fa;
+            text-decoration: underline;
+        }
+
+        /* ========== LAYOUT ========== */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: var(--spacing-xl);
+        }
+
+        .header {
+            text-align: center;
+            padding: var(--spacing-2xl) 0;
+            margin-bottom: var(--spacing-2xl);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .meta {
+            display: flex;
+            gap: var(--spacing-lg);
+            justify-content: center;
+            flex-wrap: wrap;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: var(--spacing-lg);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        /* ========== CARDS & SECTIONS ========== */
+        .section {
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .concept-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-lg);
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .concept-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .concept-card.good {
+            border-left-color: var(--secondary);
+        }
+
+        .concept-card.bad {
+            border-left-color: var(--warning);
+        }
+
+        .concept-card.warning {
+            border-left-color: var(--accent);
+        }
+
+        .concept-card.info {
+            border-left-color: var(--primary);
+        }
+
+        /* ========== CODE BLOCKS ========== */
+        code {
+            font-family: var(--font-code);
+            font-size: 0.875rem;
+        }
+
+        .code-block {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            color: #e2e8f0;
+            display: block;
+            line-height: 1.5;
+        }
+
+        .code-inline {
+            background: var(--bg-card);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-sm);
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        pre {
+            overflow-x: auto;
+        }
+
+        pre code {
+            color: inherit;
+        }
+
+        /* ========== LISTS & CONTENT ========== */
+        ul, ol {
+            margin-left: var(--spacing-xl);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        li {
+            margin-bottom: var(--spacing-md);
+            color: var(--text-secondary);
+        }
+
+        .checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .checklist li {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-md);
+            padding: var(--spacing-sm) 0;
+        }
+
+        .checklist li::before {
+            content: "✓";
+            color: var(--secondary);
+            font-weight: bold;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        /* ========== CALLOUT BOXES ========== */
+        .callout {
+            background: var(--bg-card);
+            border-left: 4px solid var(--primary);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .callout.success {
+            border-left-color: var(--secondary);
+        }
+
+        .callout.warning {
+            border-left-color: var(--warning);
+        }
+
+        .callout.info {
+            border-left-color: var(--primary);
+        }
+
+        .callout strong {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        /* ========== BADGES & LABELS ========== */
+        .badge {
+            display: inline-block;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-right: var(--spacing-sm);
+        }
+
+        .badge.primary {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+        }
+
+        .badge.success {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+        }
+
+        .badge.warning {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+        }
+
+        /* ========== COMPARISON SECTION ========== */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .comparison-item {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            border: 1px solid var(--border);
+        }
+
+        .comparison-item.bad {
+            border-left: 4px solid var(--warning);
+        }
+
+        .comparison-item.good {
+            border-left: 4px solid var(--secondary);
+        }
+
+        .comparison-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .comparison-item.bad .comparison-label {
+            color: #fca5a5;
+        }
+
+        .comparison-item.good .comparison-label {
+            color: #34d399;
+        }
+
+        /* ========== EVOLUTION TIMELINE ========== */
+        .evolution {
+            position: relative;
+            padding: var(--spacing-xl) 0;
+        }
+
+        .evolution::before {
+            content: '';
+            position: absolute;
+            left: var(--spacing-lg);
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, var(--primary) 0%, transparent 100%);
+        }
+
+        .evolution-step {
+            position: relative;
+            margin-bottom: var(--spacing-2xl);
+            margin-left: var(--spacing-2xl);
+        }
+
+        .evolution-step::before {
+            content: '';
+            position: absolute;
+            left: -1.875rem;
+            top: var(--spacing-md);
+            width: 12px;
+            height: 12px;
+            background: var(--primary);
+            border: 3px solid var(--bg-dark);
+            border-radius: 50%;
+        }
+
+        .evolution-step.current::before {
+            width: 20px;
+            height: 20px;
+            left: -2.5rem;
+            top: 0;
+            background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+        }
+
+        .evolution-step h4 {
+            margin-bottom: var(--spacing-sm);
+        }
+
+        /* ========== FOOTER ========== */
+        .footer {
+            border-top: 1px solid var(--border);
+            padding-top: var(--spacing-2xl);
+            margin-top: var(--spacing-2xl);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .footer a {
+            color: var(--primary);
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .container {
+                padding: var(--spacing-lg);
+            }
+
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+
+            .meta {
+                flex-direction: column;
+                gap: var(--spacing-sm);
+            }
+
+            .evolution::before {
+                left: var(--spacing-sm);
+            }
+
+            .evolution-step {
+                margin-left: var(--spacing-xl);
+            }
+
+            .evolution-step::before {
+                left: -1.375rem;
+            }
+
+            .evolution-step.current::before {
+                left: -1.875rem;
+            }
+        }
+
+        /* ========== ANIMATIONS ========== */
+        @media (prefers-reduced-motion: no-preference) {
+            .concept-card {
+                animation: fadeInUp 0.5s ease-out forwards;
+                opacity: 0;
+            }
+
+            .concept-card:nth-child(1) { animation-delay: 0s; }
+            .concept-card:nth-child(2) { animation-delay: 0.1s; }
+            .concept-card:nth-child(3) { animation-delay: 0.2s; }
+            .concept-card:nth-child(4) { animation-delay: 0.3s; }
+            .concept-card:nth-child(5) { animation-delay: 0.4s; }
+
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        }
+
+        /* ========== SYNTAX HIGHLIGHTING ========== */
+        .keyword { color: #f59e0b; }
+        .string { color: #34d399; }
+        .comment { color: #64748b; }
+        .function { color: #60a5fa; }
+        .number { color: #a78bfa; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>Prompt Engineering 101</h1>
+            <p class="subtitle">How to Instruct Claude to Make Good Decisions</p>
+            <div class="meta">
+                <span class="meta-item">⏱️ 90 min lecture + 120 min hands-on</span>
+                <span class="meta-item">🎯 Beginner</span>
+                <span class="meta-item">💡 Production-Ready Patterns</span>
+            </div>
+        </div>
+
+        <!-- THE PROBLEM -->
+        <section class="section">
+            <h2>🚨 The Problem</h2>
+            <p>Imagine you're building an AI system for a bank that evaluates loan applications. You have Claude API access. Your first instinct:</p>
+            
+            <div class="code-block">
+                <code>"Claude, should we approve this loan?"</code>
+            </div>
+
+            <p><strong>What happens?</strong></p>
+
+            <div class="callout info">
+                <strong>Claude's Response:</strong>
+                "I would need to see the applicant's credit score, income, employment status, loan amount, and other factors to make an informed decision. Could you provide more details?"
+            </div>
+
+            <p><strong>The problem:</strong> Claude doesn't know <em>WHAT</em> to decide or <em>HOW</em> to structure the answer. It's like asking a person to "make a decision" without context, criteria, or format expectations.</p>
+
+            <p>This is where <strong>prompt engineering</strong> comes in.</p>
+        </section>
+
+        <!-- WHAT IS IT -->
+        <section class="section">
+            <h2>💡 What is Prompt Engineering?</h2>
+            <p><strong>Simple definition:</strong> Writing clear, specific instructions so Claude understands:</p>
+            
+            <ol>
+                <li><strong>What role to play</strong> ("You are a loan officer")</li>
+                <li><strong>What information matters</strong> ("Consider credit score, income, employment")</li>
+                <li><strong>What to decide</strong> ("Approve, deny, or escalate to review")</li>
+                <li><strong>How to structure output</strong> ("Format as JSON with decision and reason")</li>
+            </ol>
+
+            <div class="callout success">
+                <strong>Not magic.</strong> It's just being specific and clear. Like explaining a task to a colleague.
+            </div>
+        </section>
+
+        <!-- EVOLUTION -->
+        <section class="section">
+            <h2>📈 The Evolution: From Bad to Good</h2>
+            <p>Let's see how a prompt evolves from bad to good using our loan application example.</p>
+
+            <div class="evolution">
+                <!-- VERSION 1 -->
+                <div class="evolution-step">
+                    <h4>❌ Version 1: Vague (This fails)</h4>
+                    <div class="concept-card bad">
+                        <div class="code-block">
+                            <code><span class="string">"Evaluate this loan application.
+
+Applicant: John Doe
+Amount: $50,000
+Credit Score: 750
+Income: $100,000
+Employment: Yes"</span></code>
+                        </div>
+                        <p><strong>Claude's response:</strong> "This applicant appears to have good credit and stable income. The $50,000 loan is reasonable given the income level. However, I would need more information..."</p>
+                        <p><strong>What's wrong?</strong></p>
+                        <ul>
+                            <li>No clear decision (approve/deny/review?)</li>
+                            <li>No structured format</li>
+                            <li>Vague output ("appears to," "would need")</li>
+                            <li>No clear rules to follow</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- VERSION 2 -->
+                <div class="evolution-step">
+                    <h4>✓ Version 2: Better (Getting closer)</h4>
+                    <div class="concept-card warning">
+                        <div class="code-block">
+                            <code><span class="keyword">You are a</span> <span class="function">loan officer</span>.
+<span class="keyword">Decision rules:</span>
+- <span class="function">Credit score</span> > 700: Good
+- <span class="function">Income</span> > loan × 5: Can handle payment
+- <span class="function">Employment</span>: Must be employed</code>
+                        </div>
+                        <p><strong>Claude's response:</strong> "DECISION: Approved. Reasoning: Credit score of 750 is above 700. Income of $100,000 is 2× the loan..."</p>
+                        <p><strong>What's better?</strong> Clear rules, explicit criteria, better reasoning.</p>
+                        <p><strong>What's still missing?</strong> No format spec, no edge cases, no JSON.</p>
+                    </div>
+                </div>
+
+                <!-- VERSION 3 -->
+                <div class="evolution-step current">
+                    <h4>✅ Version 3: Production-Ready (This works)</h4>
+                    <div class="concept-card good">
+                        <div class="code-block">
+                            <code><span class="keyword">You are</span> <span class="function">loan evaluation</span> <span class="keyword">system</span>.
+
+<span class="keyword">Output format (JSON):</span>
+{
+  <span class="string">"decision"</span>: <span class="string">"approved"</span> | <span class="string">"denied"</span> | <span class="string">"review"</span>,
+  <span class="string">"reason"</span>: <span class="string">"explanation"</span>,
+  <span class="string">"score"</span>: <span class="number">0</span>-<span class="number">100</span>
+}
+
+<span class="keyword">Scoring:</span>
+<span class="number">80</span>+: Approved
+<span class="number">50</span>-<span class="number">79</span>: Review
+&lt; <span class="number">50</span>: Denied</code>
+                        </div>
+                        <p><strong>Why this works:</strong></p>
+                        <ul class="checklist">
+                            <li>Clear role specified</li>
+                            <li>Explicit format defined</li>
+                            <li>Clear scoring rules</li>
+                            <li>Machine-readable output</li>
+                            <li>Edge cases handled</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRINCIPLES -->
+        <section class="section">
+            <h2>🎯 The 5 Key Principles</h2>
+
+            <div class="concept-card info">
+                <h4>Principle 1: Be Specific</h4>
+                <div class="comparison">
+                    <div class="comparison-item bad">
+                        <div class="comparison-label">❌ Bad</div>
+                        <div class="code-block"><code>"Evaluate this loan application."</code></div>
+                    </div>
+                    <div class="comparison-item good">
+                        <div class="comparison-label">✅ Good</div>
+                        <div class="code-block"><code>"You are a loan evaluation system. Output JSON with decision (approved/denied/review)..."</code></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card info">
+                <h4>Principle 2: Give Context</h4>
+                <div class="comparison">
+                    <div class="comparison-item bad">
+                        <div class="comparison-label">❌ Bad</div>
+                        <div class="code-block"><code>"John Doe, $50k, 750 credit"</code></div>
+                    </div>
+                    <div class="comparison-item good">
+                        <div class="comparison-label">✅ Good</div>
+                        <div class="code-block"><code>"John Doe is applying for $50,000.
+His credit score is 750 (excellent).
+Annual income is $100,000."</code></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card info">
+                <h4>Principle 3: Show Examples</h4>
+                <div class="comparison">
+                    <div class="comparison-item bad">
+                        <div class="comparison-label">❌ Bad</div>
+                        <div class="code-block"><code>"Decide if approved."</code></div>
+                    </div>
+                    <div class="comparison-item good">
+                        <div class="comparison-label">✅ Good</div>
+                        <div class="code-block"><code><span class="comment">// SHOULD APPROVE:</span>
+Credit: 780, Income: 120k
+Decision: Approved (score 90+)
+
+<span class="comment">// SHOULD DENY:</span>
+Credit: 580, Income: 30k
+Decision: Denied (score 20)</code></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card info">
+                <h4>Principle 4: Specify Format</h4>
+                <div class="comparison">
+                    <div class="comparison-item bad">
+                        <div class="comparison-label">❌ Bad</div>
+                        <div class="code-block"><code>"Tell me your thoughts."</code></div>
+                    </div>
+                    <div class="comparison-item good">
+                        <div class="comparison-label">✅ Good</div>
+                        <div class="code-block"><code><span class="keyword">Output ONLY valid JSON:</span>
+{
+  <span class="string">"decision"</span>: <span class="string">string</span>,
+  <span class="string">"score"</span>: <span class="number">number</span>
+}</code></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card info">
+                <h4>Principle 5: Define Constraints</h4>
+                <div class="comparison">
+                    <div class="comparison-item bad">
+                        <div class="comparison-label">❌ Bad</div>
+                        <div class="code-block"><code>"Be objective."</code></div>
+                    </div>
+                    <div class="comparison-item good">
+                        <div class="comparison-label">✅ Good</div>
+                        <div class="code-block"><code><span class="keyword">Rules:</span>
+1. MUST include numeric score
+2. MUST cite which criteria used
+3. NEVER approve if employment unverified
+4. Do NOT make judgments beyond criteria</code></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMMON MISTAKES -->
+        <section class="section">
+            <h2>⚠️ Common Mistakes to Avoid</h2>
+
+            <div class="concept-card bad">
+                <h4>Mistake 1: Assuming Claude Knows Context</h4>
+                <p>"Is this a good loan?" — Claude doesn't know YOUR bank's rules. Be explicit.</p>
+            </div>
+
+            <div class="concept-card bad">
+                <h4>Mistake 2: Vague Instructions</h4>
+                <p>"Be objective." — What does that mean? Give specific criteria instead.</p>
+            </div>
+
+            <div class="concept-card bad">
+                <h4>Mistake 3: Forgetting Examples</h4>
+                <p>"Decide if approved." — Show examples of approved AND denied applications.</p>
+            </div>
+
+            <div class="concept-card bad">
+                <h4>Mistake 4: Not Specifying Format</h4>
+                <p>"Give me the result." — JSON? Natural language? Be explicit.</p>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <p>🚀 Week 1, Day 1: Prompt Engineering 101 | Production AI Architect Bootcamp</p>
+            <p style="margin-top: var(--spacing-md);">Next: Read the complete tutorial, run the 5 framework examples, and complete the exercises</p>
+        </div>
+    </div>
+</body>
+</html>

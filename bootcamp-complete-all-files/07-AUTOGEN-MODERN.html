@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoGen Example — Prompt Engineering</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-primary: #6366f1;
+            --color-accent: #ec4899;
+            --color-success: #10b981;
+            --color-bg: #ffffff;
+            --color-text: #1e293b;
+            --color-text-muted: #64748b;
+            
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+            --shadow-md: 0 8px 16px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
+            
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'Fira Code', 'JetBrains Mono', monospace;
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-body);
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 16px 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-badge {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .hero {
+            position: relative;
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(236, 72, 153, 0.03) 100%);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%; right: -10%;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15), transparent);
+            border-radius: 50%;
+            animation: floatBlob 6s ease-in-out infinite;
+        }
+
+        @keyframes floatBlob {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(30px) scale(1.05); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--color-text-muted);
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+
+        section { margin-bottom: 60px; }
+
+        h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: var(--color-text);
+        }
+
+        p { margin-bottom: 16px; }
+
+        .code-container {
+            background: #1e293b;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            margin: 30px 0;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .code-header {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(236, 72, 153, 0.1) 100%);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .code-title {
+            color: #a5b4fc;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(99, 102, 241, 0.3);
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+
+        pre {
+            padding: 24px;
+            overflow-x: auto;
+            color: #e0e7ff;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .info-box {
+            background: rgba(99, 102, 241, 0.08);
+            border-left: 4px solid var(--color-primary);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .info-box h4 {
+            color: var(--color-primary);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .explanation {
+            background: white;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: var(--shadow-md);
+        }
+
+        .explanation h4 {
+            color: var(--color-primary);
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        footer {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(236, 72, 153, 0.03) 100%);
+            padding: 60px 40px;
+            text-align: center;
+            margin-top: 80px;
+            border-top: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        footer h3 {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--color-primary);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            main { padding: 40px 20px; }
+            pre { font-size: 0.8rem; padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-content">
+            <div class="nav-title">🤖 AutoGen Example</div>
+            <div class="nav-badge">Framework 4 / 5</div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content">
+            <h1>AutoGen</h1>
+            <p>Multi-agent systems where agents converse and collaborate</p>
+        </div>
+    </header>
+
+    <main>
+        <section>
+            <h2>What is AutoGen?</h2>
+            <p>AutoGen enables multiple AI agents to have conversations and collaborate on solving problems. Agents can be LLM-based or human-based, and they exchange messages until a solution is reached.</p>
+
+            <div class="info-box">
+                <h4>Key Features</h4>
+                <p>✓ AssistantAgent (LLM-powered)<br>
+                ✓ UserProxyAgent (human in the loop)<br>
+                ✓ Conversation-based collaboration<br>
+                ✓ Tool use and code execution<br>
+                ✓ Flexible agent configuration<br>
+                ✓ Built-in failure recovery</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Architecture: Two Agents Talking</h2>
+
+            <p>In AutoGen, agents communicate through messages:</p>
+            <ul style="margin-left: 20px;">
+                <li><strong>LoanAnalyst</strong>: Evaluates credit score and income</li>
+                <li><strong>LoanReviewer</strong>: Reviews analyst's assessment and makes final decision</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Complete Example</h2>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="code-title">04_autogen_loan_evaluator.py</div>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre><code>from autogen import AssistantAgent, UserProxyAgent, config_list_from_json
+import json
+
+# Configure model
+config_list = [
+    {
+        "model": "claude-3-5-sonnet-20241022",
+        "api_key": "sk-ant-your-key"
+    }
+]
+
+# Create LoanAnalyst agent
+analyst = AssistantAgent(
+    name="LoanAnalyst",
+    system_message="""You are a loan analyst. Your job is to:
+1. Review credit score, income, and loan amount
+2. Calculate debt-to-income ratio
+3. Score the applicant (0-100)
+4. Provide analysis to the reviewer
+
+Scoring:
+- Credit 750+: 40 points
+- Credit 650-749: 25 points
+- DTI <0.36: 40 points
+- DTI 0.36-0.43: 25 points
+- Loan <50% income: 20 points""",
+    llm_config={
+        "config_list": config_list,
+        "temperature": 0.3
+    }
+)
+
+# Create LoanReviewer agent
+reviewer = AssistantAgent(
+    name="LoanReviewer",
+    system_message="""You are a senior loan reviewer. Your job is to:
+1. Read the analyst's assessment
+2. Make final decision: APPROVED, REVIEW, or DENIED
+3. Provide reasoning
+
+Decision rules:
+- Score 80+: APPROVED
+- Score 50-79: REVIEW
+- Score <50: DENIED""",
+    llm_config={
+        "config_list": config_list,
+        "temperature": 0.3
+    }
+)
+
+# Create UserProxyAgent to facilitate
+user_proxy = UserProxyAgent(
+    name="Evaluator",
+    human_input_mode="NEVER",
+    max_consecutive_auto_reply=2,
+    code_execution_config={"use_docker": False}
+)
+
+# Test applications
+test_applications = [
+    {
+        "name": "Strong Candidate",
+        "credit_score": 780,
+        "annual_income": 150000,
+        "loan_amount": 50000
+    },
+    {
+        "name": "Borderline Case",
+        "credit_score": 680,
+        "annual_income": 65000,
+        "loan_amount": 40000
+    },
+    {
+        "name": "Risky Applicant",
+        "credit_score": 580,
+        "annual_income": 30000,
+        "loan_amount": 50000
+    }
+]
+
+if __name__ == "__main__":
+    for app in test_applications:
+        print(f"\n{'='*60}")
+        print(f"Evaluating: {app['name']}")
+        print(f"{'='*60}\n")
+        
+        dti = app["loan_amount"] / app["annual_income"]
+        
+        message = f"""Please evaluate this loan application:
+        
+Credit Score: {app['credit_score']}
+Annual Income: ${app['annual_income']:,}
+Loan Amount: ${app['loan_amount']:,}
+DTI Ratio: {dti:.2f}
+
+Analyst, provide your assessment. Reviewer, then make the final decision."""
+
+        # Initiate conversation between agents
+        user_proxy.initiate_chat(
+            analyst,
+            message=message
+        )</code></pre>
+            </div>
+
+            <div class="info-box">
+                <h4>How AutoGen Works</h4>
+                <p>1. UserProxy sends message to Analyst<br>
+                2. Analyst analyzes and sends response<br>
+                3. Reviewer evaluates analyst's assessment<br>
+                4. Agents continue talking until consensus<br>
+                5. Final decision emerges from conversation</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Key Concepts</h2>
+
+            <div class="explanation">
+                <h4>1. AssistantAgent</h4>
+                <p>An LLM-powered agent with a system message defining its role. Takes messages as input, generates responses.</p>
+            </div>
+
+            <div class="explanation">
+                <h4>2. UserProxyAgent</h4>
+                <p>Represents the human or initiator. Can be fully automated (human_input_mode="NEVER") or require human approval.</p>
+            </div>
+
+            <div class="explanation">
+                <h4>3. Conversation Flow</h4>
+                <p>Agents exchange messages until a termination condition is met (e.g., "APPROVED" detected, max turns reached).</p>
+            </div>
+
+            <div class="explanation">
+                <h4>4. Configuration</h4>
+                <p>Set temperature, max replies, and code execution settings for each agent independently.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Installation</h2>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="code-title">Terminal</div>
+                </div>
+                <pre><code>pip install pyautogen</code></pre>
+            </div>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="code-title">Run Example</div>
+                </div>
+                <pre><code>export ANTHROPIC_API_KEY=sk-ant-your-key
+python 04_autogen_loan_evaluator.py</code></pre>
+            </div>
+        </section>
+
+        <section>
+            <h2>When to Use AutoGen</h2>
+
+            <div class="info-box">
+                <h4>✓ Use for:</h4>
+                <p>Complex problems requiring multiple perspectives, systems where agents should negotiate/discuss, scenarios with human-in-the-loop</p>
+            </div>
+
+            <div class="info-box">
+                <h4>✗ Skip if:</h4>
+                <p>You have simple single-step tasks or need guaranteed decision consistency</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>vs Other Frameworks</h2>
+
+            <p><strong>AutoGen:</strong> Agents have conversations, exchange messages naturally<br>
+            <strong>LangGraph:</strong> Deterministic workflows with explicit routing<br>
+            <strong>CrewAI:</strong> Role-based agents with tasks and goals</p>
+        </section>
+    </main>
+
+    <footer>
+        <h3>Framework 4 Complete!</h3>
+        <p>Multi-agent conversations mastered. Final framework: CrewAI.</p>
+        <div class="footer-links">
+            <a href="#">👥 CrewAI</a>
+            <a href="#">✍️ Exercises</a>
+        </div>
+    </footer>
+
+    <script>
+        function copyCode(button) {
+            const codeBlock = button.closest('.code-container').querySelector('pre code');
+            const text = codeBlock.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const original = button.textContent;
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = original;
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

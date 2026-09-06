@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LangGraph Example — Prompt Engineering</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-primary: #6366f1;
+            --color-accent: #ec4899;
+            --color-success: #10b981;
+            --color-bg: #ffffff;
+            --color-text: #1e293b;
+            --color-text-muted: #64748b;
+            
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+            --shadow-md: 0 8px 16px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
+            
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'Fira Code', 'JetBrains Mono', monospace;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 16px 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-badge {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .hero {
+            position: relative;
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(236, 72, 153, 0.03) 100%);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15), transparent);
+            border-radius: 50%;
+            animation: floatBlob 6s ease-in-out infinite;
+        }
+
+        @keyframes floatBlob {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(30px) scale(1.05); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--color-text-muted);
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+
+        section {
+            margin-bottom: 60px;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: var(--color-text);
+        }
+
+        p {
+            margin-bottom: 16px;
+            color: var(--color-text);
+            line-height: 1.8;
+        }
+
+        .code-container {
+            background: #1e293b;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            margin: 30px 0;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .code-header {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(236, 72, 153, 0.1) 100%);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .code-title {
+            color: #a5b4fc;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(99, 102, 241, 0.3);
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+
+        pre {
+            padding: 24px;
+            overflow-x: auto;
+            color: #e0e7ff;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .info-box {
+            background: rgba(99, 102, 241, 0.08);
+            border-left: 4px solid var(--color-primary);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .info-box h4 {
+            color: var(--color-primary);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .output-box {
+            background: rgba(16, 185, 129, 0.08);
+            border-left: 4px solid var(--color-success);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .output-box h4 {
+            color: var(--color-success);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .diagram {
+            background: white;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            border-radius: 8px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+        }
+
+        .node {
+            display: inline-block;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 10px;
+            font-weight: 600;
+        }
+
+        .arrow {
+            display: inline-block;
+            margin: 0 10px;
+            font-size: 1.5rem;
+            color: var(--color-primary);
+            vertical-align: middle;
+        }
+
+        .explanation {
+            background: white;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: var(--shadow-md);
+        }
+
+        .explanation h4 {
+            color: var(--color-primary);
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        th {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        footer {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(236, 72, 153, 0.03) 100%);
+            padding: 60px 40px;
+            text-align: center;
+            margin-top: 80px;
+            border-top: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        footer h3 {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--color-primary);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            main {
+                padding: 40px 20px;
+            }
+
+            pre {
+                font-size: 0.8rem;
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-content">
+            <div class="nav-title">📊 LangGraph Example</div>
+            <div class="nav-badge">Framework 3 / 5</div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content">
+            <h1>LangGraph</h1>
+            <p>State machines and explicit workflows for complex applications</p>
+        </div>
+    </header>
+
+    <main>
+        <section>
+            <h2>What is LangGraph?</h2>
+            <p>LangGraph adds state management and explicit node graphs on top of LangChain. Perfect for applications with decision points, multiple steps, and complex routing.</p>
+
+            <div class="info-box">
+                <h4>Key Features</h4>
+                <p>✓ StateGraph with TypedDict for type safety<br>
+                ✓ Explicit nodes (functions) and edges (routing)<br>
+                ✓ Conditional edges for branching logic<br>
+                ✓ Persistent state across steps<br>
+                ✓ Visual debugging<br>
+                ✓ Perfect for production workflows</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Workflow Diagram</h2>
+
+            <div class="diagram">
+                <div class="node">START</div>
+                <div class="arrow">→</div>
+                <div class="node">Gather Info</div>
+                <div class="arrow">→</div>
+                <div class="node">Evaluate</div>
+                <div class="arrow">→</div>
+                <div class="node">Approve/Deny</div>
+                <div class="arrow">→</div>
+                <div class="node">END</div>
+            </div>
+
+            <p style="text-align: center; color: var(--color-text-muted); margin-top: 20px;">
+                Clear, explicit workflow with state preserved at each step
+            </p>
+        </section>
+
+        <section>
+            <h2>Complete Example</h2>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="code-title">03_langgraph_loan_evaluator.py</div>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre><code>from langgraph.graph import StateGraph
+from langchain.chat_models import ChatAnthropic
+from typing_extensions import TypedDict
+import json
+
+# Define state schema
+class LoanApplicationState(TypedDict):
+    credit_score: int
+    annual_income: float
+    loan_amount: float
+    dti_ratio: float
+    evaluation: dict
+    decision: str
+
+# Initialize model
+model = ChatAnthropic(model="claude-3-5-sonnet-20241022")
+
+# Node 1: Gather information
+def gather_info(state: LoanApplicationState) -> LoanApplicationState:
+    """Calculate DTI and prepare for evaluation"""
+    state["dti_ratio"] = state["loan_amount"] / state["annual_income"]
+    print(f"✓ Info gathered - DTI: {state['dti_ratio']:.2f}")
+    return state
+
+# Node 2: Evaluate application
+def evaluate_application(state: LoanApplicationState) -> LoanApplicationState:
+    """Call Claude to evaluate"""
+    prompt = f"""Evaluate this loan application:
+    
+Credit Score: {state['credit_score']}
+Annual Income: ${state['annual_income']:,}
+Loan Amount: ${state['loan_amount']:,}
+DTI Ratio: {state['dti_ratio']:.2f}
+
+Score and decide: APPROVED, REVIEW, or DENIED
+
+Return ONLY valid JSON with: decision, score, reasoning"""
+
+    response = model.invoke(prompt)
+    state["evaluation"] = json.loads(response.content)
+    print(f"✓ Evaluated - Score: {state['evaluation'].get('score')}")
+    return state
+
+# Node 3: Route decision
+def route_decision(state: LoanApplicationState) -> str:
+    """Route based on decision"""
+    decision = state["evaluation"]["decision"]
+    state["decision"] = decision
+    return decision
+
+# Node 4: Approve path
+def approve_applicant(state: LoanApplicationState) -> LoanApplicationState:
+    """Handle approved applications"""
+    print("✓ Applicant APPROVED - Preparing offer")
+    return state
+
+# Node 5: Review path
+def review_applicant(state: LoanApplicationState) -> LoanApplicationState:
+    """Handle review cases"""
+    print("✓ Application moved to REVIEW - Escalating")
+    return state
+
+# Node 6: Deny path
+def deny_applicant(state: LoanApplicationState) -> LoanApplicationState:
+    """Handle denied applications"""
+    print("✓ Application DENIED - Sending notification")
+    return state
+
+# Build the graph
+graph_builder = StateGraph(LoanApplicationState)
+
+# Add nodes
+graph_builder.add_node("gather_info", gather_info)
+graph_builder.add_node("evaluate", evaluate_application)
+graph_builder.add_node("approve", approve_applicant)
+graph_builder.add_node("review", review_applicant)
+graph_builder.add_node("deny", deny_applicant)
+
+# Add edges
+graph_builder.add_edge("START", "gather_info")
+graph_builder.add_edge("gather_info", "evaluate")
+
+# Conditional edge from evaluate
+def should_approve(state):
+    decision = state["evaluation"]["decision"]
+    if decision == "approved":
+        return "approve"
+    elif decision == "review":
+        return "review"
+    else:
+        return "deny"
+
+graph_builder.add_conditional_edges("evaluate", should_approve)
+
+# End paths
+graph_builder.add_edge("approve", "END")
+graph_builder.add_edge("review", "END")
+graph_builder.add_edge("deny", "END")
+
+# Compile graph
+graph = graph_builder.compile()
+
+# Test applications
+test_applications = [
+    {
+        "credit_score": 780,
+        "annual_income": 150000,
+        "loan_amount": 50000
+    },
+    {
+        "credit_score": 680,
+        "annual_income": 65000,
+        "loan_amount": 40000
+    },
+    {
+        "credit_score": 580,
+        "annual_income": 30000,
+        "loan_amount": 50000
+    }
+]
+
+# Run evaluations
+if __name__ == "__main__":
+    for i, app in enumerate(test_applications, 1):
+        print(f"\n{'='*50}")
+        print(f"Application {i}")
+        print(f"{'-'*50}")
+        
+        # Create initial state
+        initial_state = {
+            "credit_score": app["credit_score"],
+            "annual_income": app["annual_income"],
+            "loan_amount": app["loan_amount"],
+            "dti_ratio": 0,
+            "evaluation": {},
+            "decision": ""
+        }
+        
+        # Execute workflow
+        result = graph.invoke(initial_state)
+        
+        print(f"\n✓ FINAL DECISION: {result['decision']}")
+        print(json.dumps(result['evaluation'], indent=2))</code></pre>
+            </div>
+
+            <div class="output-box">
+                <h4>Execution Flow</h4>
+                <p>You'll see the workflow progress through each node:</p>
+                <pre><code>==================================================
+Application 1
+--------------------------------------------------
+✓ Info gathered - DTI: 0.33
+✓ Evaluated - Score: 95
+✓ Applicant APPROVED - Preparing offer
+
+✓ FINAL DECISION: approved</code></pre>
+            </div>
+        </section>
+
+        <section>
+            <h2>Key Concepts</h2>
+
+            <div class="explanation">
+                <h4>1. StateGraph & TypedDict</h4>
+                <p><code>TypedDict</code> defines what data flows through the graph. Type-safe and self-documenting.</p>
+            </div>
+
+            <div class="explanation">
+                <h4>2. Nodes</h4>
+                <p>Functions that take state in, do work, return updated state. Each node is a step in the workflow.</p>
+            </div>
+
+            <div class="explanation">
+                <h4>3. Edges</h4>
+                <p><code>add_edge(from, to)</code> connects nodes sequentially. <code>add_conditional_edges(from, route_fn)</code> for branching.</p>
+            </div>
+
+            <div class="explanation">
+                <h4>4. Conditional Routing</h4>
+                <p>The <code>route_decision</code> function receives state and returns which node to go to next. Perfect for if/else logic.</p>
+            </div>
+
+            <div class="explanation">
+                <h4>5. Compile & Invoke</h4>
+                <p><code>graph.compile()</code> creates the executable workflow. <code>graph.invoke(initial_state)</code> runs it.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Why LangGraph?</h2>
+
+            <table>
+                <tr>
+                    <th>Problem</th>
+                    <th>Solution</th>
+                </tr>
+                <tr>
+                    <td>Complex workflows with many steps</td>
+                    <td>Explicit nodes + edges</td>
+                </tr>
+                <tr>
+                    <td>Decision logic (if/else)</td>
+                    <td>Conditional edges</td>
+                </tr>
+                <tr>
+                    <td>State management across steps</td>
+                    <td>TypedDict state schema</td>
+                </tr>
+                <tr>
+                    <td>Hard to debug flow</td>
+                    <td>Visual workflow diagram</td>
+                </tr>
+                <tr>
+                    <td>Testing individual steps</td>
+                    <td>Each node is testable function</td>
+                </tr>
+            </table>
+        </section>
+
+        <section>
+            <h2>Installation</h2>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="code-title">Terminal</div>
+                </div>
+                <pre><code>pip install langgraph langchain-anthropic</code></pre>
+            </div>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="code-title">Run Example</div>
+                </div>
+                <pre><code>export ANTHROPIC_API_KEY=sk-ant-your-key
+python 03_langgraph_loan_evaluator.py</code></pre>
+            </div>
+        </section>
+
+        <section>
+            <h2>When to Use LangGraph</h2>
+
+            <div class="info-box">
+                <h4>✓ Use for:</h4>
+                <p>Complex multi-step workflows, explicit branching logic, state management, production systems that need reliability and observability</p>
+            </div>
+
+            <div class="info-box">
+                <h4>✗ Skip if:</h4>
+                <p>You have simple single-step tasks. LangChain might be simpler.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Comparison</h2>
+
+            <table>
+                <tr>
+                    <th>Framework</th>
+                    <th>Abstraction</th>
+                    <th>Complexity</th>
+                    <th>Best For</th>
+                </tr>
+                <tr>
+                    <td>Raw SDK</td>
+                    <td>None</td>
+                    <td>Low</td>
+                    <td>Learning</td>
+                </tr>
+                <tr>
+                    <td>LangChain</td>
+                    <td>Medium</td>
+                    <td>Medium</td>
+                    <td>Rapid dev</td>
+                </tr>
+                <tr>
+                    <td>LangGraph</td>
+                    <td>High</td>
+                    <td>High</td>
+                    <td>Complex workflows</td>
+                </tr>
+                <tr>
+                    <td>AutoGen</td>
+                    <td>High</td>
+                    <td>High</td>
+                    <td>Multi-agent</td>
+                </tr>
+                <tr>
+                    <td>CrewAI</td>
+                    <td>High</td>
+                    <td>Medium</td>
+                    <td>Role-based teams</td>
+                </tr>
+            </table>
+        </section>
+
+        <section>
+            <h2>Next Frameworks</h2>
+
+            <div class="info-box">
+                <h4>AutoGen: Multi-Agent Conversations</h4>
+                <p>Agents that can talk to each other and collaborate to solve problems.</p>
+            </div>
+
+            <div class="info-box">
+                <h4>CrewAI: Role-Based Teams</h4>
+                <p>Simpler multi-agent framework with role-based agents and tasks.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <h3>Framework 3 Complete!</h3>
+        <p>You've mastered state machines. Ready for multi-agent systems?</p>
+        <div class="footer-links">
+            <a href="#">🤖 AutoGen</a>
+            <a href="#">👥 CrewAI</a>
+            <a href="#">✍️ Exercises</a>
+        </div>
+    </footer>
+
+    <script>
+        function copyCode(button) {
+            const codeBlock = button.closest('.code-container').querySelector('pre code');
+            const text = codeBlock.innerText;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const original = button.textContent;
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = original;
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

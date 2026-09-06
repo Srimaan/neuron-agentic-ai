@@ -1,0 +1,68 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><title>Custom Agent Loop</title><style>*{margin:0;padding:0;box-sizing:border-box;}:root{--gradient:linear-gradient(135deg,#6366f1 0%,#ec4899 100%);}body{font-family:'Inter',sans-serif;background:#fff;color:#1e293b;line-height:1.6;}nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);padding:16px 40px;border-bottom:1px solid rgba(99,102,241,0.1);}main{max-width:1000px;margin:0 auto;padding:60px 40px;}h2{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:30px;}h3{font-size:1.1rem;font-weight:700;margin-top:25px;margin-bottom:15px;}.code-container{background:#1e293b;border-radius:12px;padding:20px;color:#e0e7ff;font-family:'Fira Code',monospace;font-size:0.9rem;margin:20px 0;overflow-x:auto;}.info{background:rgba(99,102,241,0.08);border-left:4px solid #6366f1;padding:20px;margin:20px 0;border-radius:8px;}</style></head><body><nav><div style="max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;"><span style="font-weight:700;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">🔄 Custom Agent Loop</span><span style="background:var(--gradient);color:white;padding:4px 12px;border-radius:20px;font-size:0.85rem;">Framework 15 / 18</span></div></nav><main><h2>Building an Agent Loop from Scratch</h2><p>Understanding how to build agents from first principles. This teaches the core ReAct pattern: Reason → Act → Observe → Repeat.</p><div class="info"><h4>The ReAct Pattern (Reasoning + Acting)</h4><p>1️⃣ <strong>Observe:</strong> Understand the current state<br>2️⃣ <strong>Reason:</strong> Think about what to do<br>3️⃣ <strong>Act:</strong> Call a tool or take action<br>4️⃣ <strong>Observe:</strong> See the result<br>5️⃣ <strong>Repeat:</strong> Continue until solved</p></div><h3>Simple Agent Loop</h3><div class="code-container">import anthropic
+
+client = anthropic.Anthropic()
+tools = [
+    {
+        "name": "check_credit_score",
+        "description": "Check someone's credit score",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "person": {"type": "string", "description": "Person's name"},
+                "score": {"type": "integer"}
+            },
+            "required": ["person", "score"]
+        }
+    }
+]
+
+# The Agent Loop
+def run_agent(user_message):
+    messages = [{"role": "user", "content": user_message}]
+    
+    while True:  # The Loop
+        # Step 1: Get Claude's response
+        response = client.messages.create(
+            model="claude-3-5-sonnet-20241022",
+            max_tokens=1024,
+            tools=tools,
+            messages=messages
+        )
+        
+        # Check if Claude wants to use a tool
+        if response.stop_reason == "tool_use":
+            # Step 2: Find which tool Claude wants to use
+            for block in response.content:
+                if block.type == "tool_use":
+                    tool_name = block.name
+                    tool_input = block.input
+                    tool_use_id = block.id
+                    
+                    # Step 3: Simulate tool result
+                    if tool_name == "check_credit_score":
+                        result = f"Credit score for {tool_input['person']}: {tool_input['score']}"
+                    
+                    # Step 4: Add tool result back to messages
+                    messages.append({"role": "assistant", "content": response.content})
+                    messages.append({
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "tool_result",
+                                "tool_use_id": tool_use_id,
+                                "content": result
+                            }
+                        ]
+                    })
+        else:
+            # Claude is done - return final answer
+            final_response = ""
+            for block in response.content:
+                if hasattr(block, "text"):
+                    final_response += block.text
+            return final_response
+
+# Run it
+result = run_agent("Evaluate John's loan (credit: 750)")
+print(result)
+</div></section><h3>When to Build Custom Loops</h3><div class="info"><h4>✓ Build Custom When:</h4><p>Learning how agents work, need maximum control, implementing custom logic, educational purposes</p><h4>✗ Skip Custom When:</h4><p>Need production speed, want maintained code, building complex workflows, team collaboration needed</p></div></main></body></html>

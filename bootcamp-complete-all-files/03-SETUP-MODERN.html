@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Setup Guide — Week 1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-primary: #6366f1;
+            --color-accent: #ec4899;
+            --color-accent-2: #f59e0b;
+            --color-success: #10b981;
+            --color-danger: #ef4444;
+            --color-bg: #ffffff;
+            --color-bg-light: #f8fafc;
+            --color-text: #1e293b;
+            --color-text-muted: #64748b;
+            
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+            --shadow-md: 0 8px 16px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
+            
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'Fira Code', 'JetBrains Mono', monospace;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 16px 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero {
+            position: relative;
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(236, 72, 153, 0.03) 100%);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15), transparent);
+            border-radius: 50%;
+            animation: floatBlob 6s ease-in-out infinite;
+        }
+
+        @keyframes floatBlob {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(30px) scale(1.05); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--color-text-muted);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+
+        section {
+            margin-bottom: 60px;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            color: var(--color-text);
+        }
+
+        p {
+            margin-bottom: 16px;
+            color: var(--color-text);
+            line-height: 1.8;
+        }
+
+        .step-card {
+            background: white;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s;
+            display: flex;
+            gap: 20px;
+        }
+
+        .step-card:hover {
+            border-color: var(--color-primary);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .step-number {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            min-width: 50px;
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+
+        .step-content h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--color-text);
+        }
+
+        .step-content p {
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .command-box {
+            background: #1e293b;
+            color: #e0e7ff;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: 16px 0;
+            overflow-x: auto;
+            border-left: 4px solid var(--color-primary);
+        }
+
+        .info-box {
+            background: rgba(99, 102, 241, 0.08);
+            border-left: 4px solid var(--color-primary);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .success-box {
+            background: rgba(16, 185, 129, 0.08);
+            border-left: 4px solid var(--color-success);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .success-box h4 {
+            color: var(--color-success);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .warning-box {
+            background: rgba(239, 68, 68, 0.08);
+            border-left: 4px solid var(--color-danger);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .warning-box h4 {
+            color: var(--color-danger);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        th {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        tr:hover {
+            background: rgba(99, 102, 241, 0.03);
+        }
+
+        footer {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(236, 72, 153, 0.03) 100%);
+            padding: 60px 40px;
+            text-align: center;
+            margin-top: 80px;
+            border-top: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        footer h3 {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--color-primary);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+            }
+
+            main {
+                padding: 40px 20px;
+            }
+
+            .step-card {
+                flex-direction: column;
+            }
+
+            .step-number {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-content">
+            <div class="nav-title">🤖 Setup Week 1</div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content">
+            <h1>Complete Setup Guide</h1>
+            <p>Everything you need to get started in 30-45 minutes</p>
+        </div>
+    </header>
+
+    <main>
+        <!-- PREREQUISITES -->
+        <section>
+            <h2>📋 Prerequisites</h2>
+            <p>Before you start, make sure you have:</p>
+
+            <div class="step-card">
+                <div class="step-number">✓</div>
+                <div class="step-content">
+                    <h4>Docker Desktop</h4>
+                    <p>For running databases locally. Download from docker.com</p>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">✓</div>
+                <div class="step-content">
+                    <h4>Python 3.11+</h4>
+                    <p>Check with: <code>python --version</code></p>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">✓</div>
+                <div class="step-content">
+                    <h4>Claude API Key</h4>
+                    <p>Get from console.anthropic.com</p>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">✓</div>
+                <div class="step-content">
+                    <h4>Git & GitHub</h4>
+                    <p>For cloning repositories</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SETUP STEPS -->
+        <section>
+            <h2>🚀 Setup Steps</h2>
+
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Create Project Directory</h4>
+                    <p>Create a folder for your bootcamp work:</p>
+                    <div class="command-box">$ mkdir ai-bootcamp && cd ai-bootcamp</div>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Create Virtual Environment</h4>
+                    <p>Python needs an isolated environment:</p>
+                    <div class="command-box">$ python -m venv venv
+$ source venv/bin/activate  # On Windows: venv\Scripts\activate</div>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Install Dependencies</h4>
+                    <p>Create requirements.txt:</p>
+                    <div class="command-box">anthropic==0.24.0
+langchain==0.1.0
+langgraph==0.0.1
+pyautogen==0.2.0
+crewai==0.1.0
+pydantic==2.5.0
+python-dotenv==1.0.0
+pytest==7.4.0</div>
+                    <p style="margin-top: 12px;">Then install:</p>
+                    <div class="command-box">$ pip install -r requirements.txt</div>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h4>Configure API Key</h4>
+                    <p>Create .env file in project root:</p>
+                    <div class="command-box">ANTHROPIC_API_KEY=sk-ant-your-key-here</div>
+                    <div class="warning-box">
+                        <h4>⚠️ Security Warning</h4>
+                        <p>Never commit .env to git. Add to .gitignore!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <h4>Download Course Materials</h4>
+                    <p>Copy all course files to your project directory. Should have:</p>
+                    <div class="command-box">├── 01-PROMPT-ENGINEERING-101.md
+├── 01-PROMPT-ENGINEERING-EXERCISES.md
+├── 01-PROMPT-ENGINEERING-example-01-raw-sdk.py
+├── 01-PROMPT-ENGINEERING-example-02-langchain.py
+├── 01-PROMPT-ENGINEERING-example-03-langgraph.py
+├── 01-PROMPT-ENGINEERING-example-04-autogen.py
+├── 01-PROMPT-ENGINEERING-example-05-crewai.py
+├── requirements.txt
+└── .env</div>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">6</div>
+                <div class="step-content">
+                    <h4>Verify Setup</h4>
+                    <p>Run the verification script:</p>
+                    <div class="command-box">$ python verify_setup.py</div>
+                    <p style="margin-top: 12px;">This checks:</p>
+                    <ul style="margin: 12px 0 0 20px;">
+                        <li>Python version 3.11+</li>
+                        <li>All packages installed</li>
+                        <li>API key configured</li>
+                        <li>Can connect to Claude API</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">7</div>
+                <div class="step-content">
+                    <h4>Run First Example</h4>
+                    <p>Test with the Raw SDK example:</p>
+                    <div class="command-box">$ python 01-PROMPT-ENGINEERING-example-01-raw-sdk.py</div>
+                    <div class="success-box">
+                        <h4>✓ Success!</h4>
+                        <p>You should see JSON output with loan evaluation decisions.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">8</div>
+                <div class="step-content">
+                    <h4>Optional: Setup Docker</h4>
+                    <p>For databases (PostgreSQL, Redis):</p>
+                    <div class="command-box">$ docker-compose up -d</div>
+                    <p style="margin-top: 12px;">This requires docker-compose.yml in project root.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TROUBLESHOOTING -->
+        <section>
+            <h2>🔧 Troubleshooting</h2>
+
+            <table>
+                <tr>
+                    <th>Issue</th>
+                    <th>Solution</th>
+                </tr>
+                <tr>
+                    <td>"ModuleNotFoundError: anthropic"</td>
+                    <td>Run: <code>pip install -r requirements.txt</code></td>
+                </tr>
+                <tr>
+                    <td>"API key not found"</td>
+                    <td>Make sure .env file exists with ANTHROPIC_API_KEY</td>
+                </tr>
+                <tr>
+                    <td>"Python version too old"</td>
+                    <td>Install Python 3.11 or later from python.org</td>
+                </tr>
+                <tr>
+                    <td>"Permission denied" on venv/bin/activate</td>
+                    <td>On Windows, use: <code>venv\Scripts\activate</code></td>
+                </tr>
+                <tr>
+                    <td>"json.JSONDecodeError"</td>
+                    <td>Claude response isn't valid JSON. Check prompt format.</td>
+                </tr>
+                <tr>
+                    <td>"Connection timeout"</td>
+                    <td>Check internet connection. API might be down.</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- VERIFICATION -->
+        <section>
+            <h2>✅ Verification Script</h2>
+
+            <p>Save this as <code>verify_setup.py</code>:</p>
+
+            <div class="command-box">#!/usr/bin/env python3
+import sys
+import os
+from pathlib import Path
+
+print("🔍 Verifying Setup...\n")
+
+# Check Python version
+print(f"✓ Python: {sys.version.split()[0]}", "✓" if sys.version_info >= (3, 11) else "✗")
+
+# Check packages
+packages = ['anthropic', 'langchain', 'pydantic']
+for pkg in packages:
+    try:
+        __import__(pkg)
+        print(f"✓ {pkg}")
+    except ImportError:
+        print(f"✗ {pkg} (run: pip install -r requirements.txt)")
+
+# Check .env file
+if Path('.env').exists():
+    print("✓ .env file found")
+else:
+    print("✗ .env file missing")
+
+# Check API key
+if os.getenv('ANTHROPIC_API_KEY'):
+    print("✓ ANTHROPIC_API_KEY set")
+else:
+    print("✗ ANTHROPIC_API_KEY not set")
+
+print("\n✓ Setup verified!" if all else "✗ Fix issues above")</div>
+
+            <div class="success-box">
+                <h4>✓ Ready!</h4>
+                <p>If all checks pass, you're ready to start learning!</p>
+            </div>
+        </section>
+
+        <!-- QUICK START -->
+        <section>
+            <h2>🎯 Quick Start Checklist</h2>
+
+            <ul style="margin: 20px 0 0 20px; list-style: none;">
+                <li style="margin: 10px 0;"><input type="checkbox"> Python 3.11+ installed</li>
+                <li style="margin: 10px 0;"><input type="checkbox"> Virtual environment created & activated</li>
+                <li style="margin: 10px 0;"><input type="checkbox"> Dependencies installed</li>
+                <li style="margin: 10px 0;"><input type="checkbox"> .env file with API key</li>
+                <li style="margin: 10px 0;"><input type="checkbox"> Course materials downloaded</li>
+                <li style="margin: 10px 0;"><input type="checkbox"> First example runs successfully</li>
+            </ul>
+
+            <div class="success-box" style="margin-top: 30px;">
+                <h4>✓ All Done!</h4>
+                <p>You're ready to start Week 1, Day 1: Prompt Engineering 101</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <h3>Setup Complete!</h3>
+        <p>You're ready to start learning prompt engineering.</p>
+        <div class="footer-links">
+            <a href="#">📖 Tutorial</a>
+            <a href="#">✍️ Exercises</a>
+            <a href="#">💻 Code Examples</a>
+        </div>
+    </footer>
+</body>
+</html>

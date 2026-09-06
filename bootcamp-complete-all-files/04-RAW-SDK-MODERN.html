@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raw SDK Example — Prompt Engineering</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-primary: #6366f1;
+            --color-accent: #ec4899;
+            --color-success: #10b981;
+            --color-danger: #ef4444;
+            --color-bg: #ffffff;
+            --color-text: #1e293b;
+            --color-text-muted: #64748b;
+            
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+            --shadow-md: 0 8px 16px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
+            
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'Fira Code', 'JetBrains Mono', monospace;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 16px 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-badge {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .hero {
+            position: relative;
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(236, 72, 153, 0.03) 100%);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15), transparent);
+            border-radius: 50%;
+            animation: floatBlob 6s ease-in-out infinite;
+        }
+
+        @keyframes floatBlob {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(30px) scale(1.05); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--color-text-muted);
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+
+        section {
+            margin-bottom: 60px;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: var(--color-text);
+        }
+
+        p {
+            margin-bottom: 16px;
+            color: var(--color-text);
+            line-height: 1.8;
+        }
+
+        .code-container {
+            background: #1e293b;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            margin: 30px 0;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .code-header {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(236, 72, 153, 0.1) 100%);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .code-title {
+            color: #a5b4fc;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(99, 102, 241, 0.3);
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+
+        pre {
+            padding: 24px;
+            overflow-x: auto;
+            color: #e0e7ff;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        code {
+            font-family: var(--font-mono);
+        }
+
+        .keyword { color: #c084fc; }
+        .string { color: #86efac; }
+        .comment { color: #64748b; }
+        .function { color: #60a5fa; }
+        .class { color: #fbbf24; }
+
+        .info-box {
+            background: rgba(99, 102, 241, 0.08);
+            border-left: 4px solid var(--color-primary);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .info-box h4 {
+            color: var(--color-primary);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .output-box {
+            background: rgba(16, 185, 129, 0.08);
+            border-left: 4px solid var(--color-success);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .output-box h4 {
+            color: var(--color-success);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .explanation {
+            background: white;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: var(--shadow-md);
+        }
+
+        .explanation h4 {
+            color: var(--color-primary);
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .explanation p {
+            margin: 8px 0;
+        }
+
+        .line-explanation {
+            background: rgba(99, 102, 241, 0.05);
+            border-left: 3px solid var(--color-primary);
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+        }
+
+        .line-code {
+            color: #a5b4fc;
+            margin-bottom: 6px;
+        }
+
+        .line-text {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+            margin-top: 6px;
+        }
+
+        footer {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(236, 72, 153, 0.03) 100%);
+            padding: 60px 40px;
+            text-align: center;
+            margin-top: 80px;
+            border-top: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        footer h3 {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--color-primary);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            main {
+                padding: 40px 20px;
+            }
+
+            pre {
+                font-size: 0.8rem;
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-content">
+            <div class="nav-title">🐍 Raw SDK Example</div>
+            <div class="nav-badge">Framework 1 / 5</div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content">
+            <h1>Raw Python SDK</h1>
+            <p>Direct Anthropic API — No abstraction layer</p>
+        </div>
+    </header>
+
+    <main>
+        <!-- OVERVIEW -->
+        <section>
+            <h2>Overview</h2>
+            <p>This example shows how to use the Anthropic Python SDK directly without any additional frameworks. This is the foundation that all other frameworks build upon.</p>
+
+            <div class="info-box">
+                <h4>What You'll Learn</h4>
+                <p>✓ How to import and initialize the Anthropic client<br>
+                ✓ How to call the messages API directly<br>
+                ✓ How to parse JSON responses<br>
+                ✓ How to handle errors<br>
+                ✓ How to test with different applications</p>
+            </div>
+        </section>
+
+        <!-- COMPLETE CODE -->
+        <section>
+            <h2>Complete Example</h2>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="code-title">01_raw_sdk_loan_evaluator.py</div>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre><code><span class="keyword">import</span> json
+<span class="keyword">import</span> os
+<span class="keyword">from</span> anthropic <span class="keyword">import</span> Anthropic
+
+<span class="comment"># Initialize client (reads ANTHROPIC_API_KEY from environment)</span>
+client = Anthropic()
+
+<span class="comment"># Define the loan evaluation prompt</span>
+SYSTEM_PROMPT = <span class="string">"""You are a loan evaluation system.
+
+CRITERIA SCORING:
+- Credit Score 750+: 40 points (Excellent)
+- Credit Score 650-749: 25 points (Good)  
+- Credit Score 600-649: 10 points (Fair)
+- Credit Score <600: 0 points (Poor)
+
+- Debt-to-Income Ratio <0.36: 40 points
+- Debt-to-Income Ratio 0.36-0.43: 25 points
+- Debt-to-Income Ratio >0.43: 0 points
+
+- Loan Amount <50% of annual income: 20 points
+- Loan Amount 50-100% of annual income: 10 points
+- Loan Amount >100% of annual income: 0 points
+
+DECISION RULES:
+- Score 80+: APPROVED
+- Score 50-79: REVIEW
+- Score <50: DENIED
+
+OUTPUT FORMAT (MUST BE VALID JSON):
+{
+  "decision": "approved|denied|review",
+  "score": 0-100,
+  "reasoning": "explain the decision",
+  "factors": {
+    "credit_score": score,
+    "income_ratio": score,
+    "loan_amount": score
+  }
+}"""</span>
+
+<span class="keyword">def</span> <span class="function">evaluate_loan</span>(applicant: dict) -> dict:
+    <span class="string">"""
+    Evaluate a loan application using Claude.
+    
+    Args:
+        applicant: Dict with credit_score, annual_income, loan_amount
+        
+    Returns:
+        Dict with decision, score, reasoning
+    """</span>
+    
+    user_message = f<span class="string">"""Evaluate this loan application:
+    
+Credit Score: {applicant['credit_score']}
+Annual Income: ${applicant['annual_income']:,}
+Requested Loan: ${applicant['loan_amount']:,}
+Debt-to-Income Ratio: {applicant['loan_amount'] / applicant['annual_income']:.2f}"""</span>
+    
+    <span class="keyword">try</span>:
+        <span class="comment"># Call Claude API directly</span>
+        response = client.messages.create(
+            model=<span class="string">"claude-3-5-sonnet-20241022"</span>,
+            max_tokens=500,
+            system=SYSTEM_PROMPT,
+            messages=[
+                {<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: user_message}
+            ]
+        )
+        
+        <span class="comment"># Extract text from response</span>
+        response_text = response.content[0].text
+        
+        <span class="comment"># Parse JSON response</span>
+        result = json.loads(response_text)
+        
+        <span class="keyword">return</span> result
+        
+    <span class="keyword">except</span> json.JSONDecodeError <span class="keyword">as</span> e:
+        <span class="keyword">return</span> {
+            <span class="string">"error"</span>: <span class="string">"Invalid JSON response"</span>,
+            <span class="string">"raw_response"</span>: response_text
+        }
+    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:
+        <span class="keyword">return</span> {<span class="string">"error"</span>: str(e)}
+
+<span class="comment"># Test cases: Good, Borderline, Risky</span>
+test_applications = [
+    {
+        <span class="string">"name"</span>: <span class="string">"Strong Candidate"</span>,
+        <span class="string">"credit_score"</span>: 780,
+        <span class="string">"annual_income"</span>: 150000,
+        <span class="string">"loan_amount"</span>: 50000
+    },
+    {
+        <span class="string">"name"</span>: <span class="string">"Borderline Case"</span>,
+        <span class="string">"credit_score"</span>: 680,
+        <span class="string">"annual_income"</span>: 65000,
+        <span class="string">"loan_amount"</span>: 40000
+    },
+    {
+        <span class="string">"name"</span>: <span class="string">"Risky Applicant"</span>,
+        <span class="string">"credit_score"</span>: 580,
+        <span class="string">"annual_income"</span>: 30000,
+        <span class="string">"loan_amount"</span>: 50000
+    }
+]
+
+<span class="comment"># Run evaluations</span>
+<span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:
+    <span class="keyword">for</span> app <span class="keyword">in</span> test_applications:
+        print(f<span class="string">"\n{'='*50}"</span>)
+        print(f<span class="string">"Evaluating: {app['name']}"</span>)
+        print(f<span class="string">"{'-'*50}"</span>)
+        
+        result = evaluate_loan(app)
+        
+        print(json.dumps(result, indent=2))
+</code></pre>
+            </div>
+
+            <div class="output-box">
+                <h4>Expected Output</h4>
+                <p>When you run this script, you'll see JSON output like:</p>
+                <pre><code>{
+  "decision": "approved",
+  "score": 95,
+  "reasoning": "Excellent credit score, low debt-to-income ratio, and reasonable loan amount",
+  "factors": {
+    "credit_score": 40,
+    "income_ratio": 40,
+    "loan_amount": 20
+  }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- LINE-BY-LINE BREAKDOWN -->
+        <section>
+            <h2>Line-by-Line Breakdown</h2>
+
+            <div class="explanation">
+                <h4>Imports (Lines 1-2)</h4>
+                <div class="line-explanation">
+                    <div class="line-code">import json</div>
+                    <div class="line-text">For parsing JSON responses from Claude</div>
+                </div>
+                <div class="line-explanation">
+                    <div class="line-code">from anthropic import Anthropic</div>
+                    <div class="line-text">The main client for calling Claude API</div>
+                </div>
+            </div>
+
+            <div class="explanation">
+                <h4>Initialize Client (Line 5)</h4>
+                <div class="line-explanation">
+                    <div class="line-code">client = Anthropic()</div>
+                    <div class="line-text">Reads ANTHROPIC_API_KEY from environment automatically. No need to pass it explicitly.</div>
+                </div>
+            </div>
+
+            <div class="explanation">
+                <h4>System Prompt (Lines 8-40)</h4>
+                <div class="line-explanation">
+                    <div class="line-code">SYSTEM_PROMPT = """..."""</div>
+                    <div class="line-text">Defines Claude's role, rules, scoring, and output format. This is what teaches Claude how to behave.</div>
+                </div>
+            </div>
+
+            <div class="explanation">
+                <h4>Function Definition (Line 42)</h4>
+                <div class="line-explanation">
+                    <div class="line-code">def evaluate_loan(applicant: dict) -> dict:</div>
+                    <div class="line-text">Takes applicant data, returns evaluation result. Type hints make code clearer.</div>
+                </div>
+            </div>
+
+            <div class="explanation">
+                <h4>API Call (Lines 57-64)</h4>
+                <div class="line-explanation">
+                    <div class="line-code">response = client.messages.create(...)</div>
+                    <div class="line-text">This is the main API call. Parameters:
+                        <ul style="margin-top: 8px; margin-left: 20px;">
+                            <li><strong>model</strong>: Which Claude version to use</li>
+                            <li><strong>max_tokens</strong>: Maximum response length</li>
+                            <li><strong>system</strong>: System prompt (the rules)</li>
+                            <li><strong>messages</strong>: User message with data</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="explanation">
+                <h4>Parse Response (Lines 67-70)</h4>
+                <div class="line-explanation">
+                    <div class="line-code">response_text = response.content[0].text</div>
+                    <div class="line-text">Extract the text from Claude's response</div>
+                </div>
+                <div class="line-explanation">
+                    <div class="line-code">result = json.loads(response_text)</div>
+                    <div class="line-text">Convert JSON string to Python dict</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- KEY CONCEPTS -->
+        <section>
+            <h2>Key Concepts</h2>
+
+            <div class="explanation">
+                <h4>1. No Abstraction</h4>
+                <p>Raw SDK is direct API calls. You control every detail. This is the most flexible but also requires more code.</p>
+            </div>
+
+            <div class="explanation">
+                <h4>2. Error Handling</h4>
+                <p>We catch two types of errors: JSON parsing errors (Claude's response isn't valid JSON) and API errors (network, timeout, etc.)</p>
+            </div>
+
+            <div class="explanation">
+                <h4>3. System vs User Messages</h4>
+                <p><strong>System:</strong> Permanent instructions (the rules)<br>
+                <strong>User:</strong> The actual task (evaluate this application)</p>
+            </div>
+
+            <div class="explanation">
+                <h4>4. Response Structure</h4>
+                <p>Claude's response is an object with <code>content</code> array. First element's <code>text</code> field contains the actual message.</p>
+            </div>
+        </section>
+
+        <!-- HOW TO RUN -->
+        <section>
+            <h2>How to Run</h2>
+
+            <h3>Step 1: Setup</h3>
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="code-title">Terminal</div>
+                </div>
+                <pre><code>pip install anthropic</code></pre>
+            </div>
+
+            <h3>Step 2: Set API Key</h3>
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="code-title">Terminal</div>
+                </div>
+                <pre><code>export ANTHROPIC_API_KEY=sk-ant-your-key-here</code></pre>
+            </div>
+
+            <h3>Step 3: Run</h3>
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="code-title">Terminal</div>
+                </div>
+                <pre><code>python 01_raw_sdk_loan_evaluator.py</code></pre>
+            </div>
+
+            <div class="info-box">
+                <h4>✓ Success!</h4>
+                <p>You should see JSON output for all 3 test applications</p>
+            </div>
+        </section>
+
+        <!-- COMPARISON -->
+        <section>
+            <h2>Compared to Other Frameworks</h2>
+
+            <table style="width: 100%; border-collapse: collapse; margin: 20px 0; background: white; border-radius: 8px; overflow: hidden; box-shadow: var(--shadow-md);">
+                <tr>
+                    <th style="background: var(--gradient-primary); color: white; padding: 12px; text-align: left;">Aspect</th>
+                    <th style="background: var(--gradient-primary); color: white; padding: 12px; text-align: left;">Raw SDK</th>
+                    <th style="background: var(--gradient-primary); color: white; padding: 12px; text-align: left;">LangChain</th>
+                    <th style="background: var(--gradient-primary); color: white; padding: 12px; text-align: left;">LangGraph</th>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(99, 102, 241, 0.1);">
+                    <td style="padding: 12px;">Lines of Code</td>
+                    <td style="padding: 12px;">~80</td>
+                    <td style="padding: 12px;">~60</td>
+                    <td style="padding: 12px;">~100</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(99, 102, 241, 0.1);">
+                    <td style="padding: 12px;">Control</td>
+                    <td style="padding: 12px;">Maximum</td>
+                    <td style="padding: 12px;">Medium</td>
+                    <td style="padding: 12px;">Medium</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(99, 102, 241, 0.1);">
+                    <td style="padding: 12px;">Learning Curve</td>
+                    <td style="padding: 12px;">Steep</td>
+                    <td style="padding: 12px;">Moderate</td>
+                    <td style="padding: 12px;">Steep</td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px;">Best For</td>
+                    <td style="padding: 12px;">Learning fundamentals</td>
+                    <td style="padding: 12px;">Rapid development</td>
+                    <td style="padding: 12px;">Complex workflows</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- NEXT STEPS -->
+        <section>
+            <h2>Next Steps</h2>
+
+            <div class="info-box">
+                <h4>Next Framework: LangChain</h4>
+                <p>After mastering Raw SDK, try LangChain. It provides helpful abstractions like <code>ChatPromptTemplate</code> and <code>OutputParser</code>.</p>
+            </div>
+
+            <p style="margin-top: 20px;">Once you understand this example, you'll be ready for:</p>
+            <ul style="margin-left: 20px;">
+                <li>LangChain (simpler syntax, reusable components)</li>
+                <li>LangGraph (state machines, complex workflows)</li>
+                <li>AutoGen (multi-agent systems)</li>
+                <li>CrewAI (role-based teams)</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <h3>Framework 1 Complete!</h3>
+        <p>You now understand the Raw SDK. Ready to learn frameworks?</p>
+        <div class="footer-links">
+            <a href="#">📖 Tutorial</a>
+            <a href="#">🔗 LangChain Example</a>
+            <a href="#">✍️ Exercises</a>
+        </div>
+    </footer>
+
+    <script>
+        function copyCode(button) {
+            const codeBlock = button.closest('.code-container').querySelector('pre code');
+            const text = codeBlock.innerText;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const original = button.textContent;
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = original;
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
