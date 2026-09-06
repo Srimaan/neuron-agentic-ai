@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production AI Architect Bootcamp</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #fafafa;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* SIDEBAR - Light Theme */
+        .sidebar {
+            width: 300px;
+            background: #ffffff;
+            color: #1a1a1a;
+            overflow-y: auto;
+            border-right: 1px solid #e5e5e5;
+            flex-shrink: 0;
+            padding: 20px 0;
+        }
+
+        .sidebar-title {
+            padding: 15px 20px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a1a;
+            border-bottom: 2px solid #e5e5e5;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        .topic-group {
+            margin-bottom: 8px;
+        }
+
+        .topic-toggle {
+            padding: 11px 16px;
+            cursor: pointer;
+            background: #ffffff;
+            border: none;
+            width: 100%;
+            text-align: left;
+            color: #1a1a1a;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 3px solid transparent;
+        }
+
+        .topic-toggle:hover {
+            background: #f5f5f5;
+            border-left-color: #666;
+        }
+
+        .topic-toggle.active {
+            background: #f5f5f5;
+            color: #000;
+            border-left-color: #000;
+        }
+
+        .topic-toggle::after {
+            content: '▼';
+            font-size: 10px;
+            transition: transform 0.2s;
+            margin-left: 8px;
+        }
+
+        .topic-toggle.collapsed::after {
+            transform: rotate(-90deg);
+        }
+
+        .topic-range {
+            font-size: 11px;
+            color: #999;
+            font-weight: 500;
+        }
+
+        .chapters-list {
+            display: none;
+            background: #fafafa;
+        }
+
+        .chapters-list.active {
+            display: block;
+        }
+
+        .chapter-item {
+            padding: 9px 16px 9px 40px;
+            cursor: pointer;
+            color: #666;
+            font-size: 12px;
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            background: #fafafa;
+            line-height: 1.4;
+        }
+
+        .chapter-item:hover {
+            background: #f0f0f0;
+            color: #1a1a1a;
+            border-left-color: #999;
+        }
+
+        .chapter-item.active {
+            background: #f0f0f0;
+            color: #000;
+            border-left-color: #000;
+            font-weight: 600;
+        }
+
+        .chapter-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            background: #e5e5e5;
+            color: #1a1a1a;
+            border-radius: 50%;
+            font-size: 10px;
+            font-weight: 700;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+
+        .chapter-item.active .chapter-number {
+            background: #1a1a1a;
+            color: #fff;
+        }
+
+        .chapter-name {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* MAIN CONTENT - Light Theme */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #fafafa;
+        }
+
+        .header {
+            padding: 24px 32px;
+            background: #ffffff;
+            border-bottom: 1px solid #e5e5e5;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .header-left h1 {
+            font-size: 22px;
+            color: #000;
+            margin: 0 0 6px 0;
+            font-weight: 700;
+        }
+
+        .breadcrumb {
+            font-size: 12px;
+            color: #999;
+            font-weight: 500;
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px;
+            background: #ffffff;
+            max-width: 900px;
+        }
+
+        /* Typography */
+        .content h1 {
+            font-size: 28px;
+            color: #000;
+            margin: 0 0 24px 0;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .content h2 {
+            font-size: 20px;
+            color: #000;
+            margin: 32px 0 16px 0;
+            font-weight: 700;
+            line-height: 1.3;
+            border-bottom: 1px solid #e5e5e5;
+            padding-bottom: 12px;
+        }
+
+        .content h3 {
+            font-size: 16px;
+            color: #1a1a1a;
+            margin: 24px 0 12px 0;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .content p {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #444;
+            margin: 0 0 16px 0;
+        }
+
+        .content ul, .content ol {
+            margin: 0 0 16px 24px;
+            line-height: 1.8;
+        }
+
+        .content li {
+            color: #444;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .content code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #c41e3a;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .content pre {
+            background: #1a1a1a;
+            color: #d4d4d4;
+            padding: 16px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 16px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .content pre code {
+            color: #d4d4d4;
+            background: none;
+            padding: 0;
+        }
+
+        .content a {
+            color: #0066cc;
+            text-decoration: none;
+            border-bottom: 1px solid #0066cc;
+        }
+
+        .content a:hover {
+            background: #f0f0f0;
+        }
+
+        /* Special Boxes */
+        .welcome-box {
+            text-align: center;
+            padding: 48px 24px;
+            background: #ffffff;
+        }
+
+        .welcome-box h2 {
+            border: none;
+            padding-bottom: 0;
+            font-size: 32px;
+            margin-bottom: 16px;
+        }
+
+        .learning-path-box {
+            background: #f9f9f9;
+            border-left: 4px solid #000;
+            padding: 20px;
+            margin: 24px 0;
+            border-radius: 0;
+        }
+
+        .learning-path-box h3 {
+            color: #000;
+            margin-top: 0;
+            font-size: 15px;
+        }
+
+        .learning-path-box p {
+            margin: 8px 0;
+            font-size: 13px;
+        }
+
+        .step-box {
+            background: #f5f5f5;
+            border-left: 3px solid #000;
+            padding: 16px;
+            margin: 16px 0;
+            border-radius: 0;
+        }
+
+        .step-box strong {
+            color: #000;
+        }
+
+        .code-block {
+            background: #1a1a1a;
+            color: #d4d4d4;
+            padding: 16px;
+            margin: 16px 0;
+            border-radius: 4px;
+            font-size: 12px;
+            overflow-x: auto;
+        }
+
+        .info-box {
+            background: #f0f7ff;
+            border-left: 4px solid #0066cc;
+            padding: 16px;
+            margin: 16px 0;
+            font-size: 13px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ff9800;
+            padding: 16px;
+            margin: 16px 0;
+            font-size: 13px;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f5f5f5;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #999;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: #ffffff;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #ddd;
+            border-radius: 3px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 250px;
+            }
+            .content {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="sidebar-title">📚 BOOTCAMP CHAPTERS</div>
+            <div id="sidebar-content"></div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <div class="header">
+                <div class="header-left">
+                    <h1 id="page-title">Welcome</h1>
+                    <div class="breadcrumb" id="breadcrumb"></div>
+                </div>
+            </div>
+            <div class="content" id="content-area">
+                <div class="welcome-box">
+                    <h2>Production AI Architect Bootcamp</h2>
+                    <p style="font-size: 15px; margin-bottom: 24px;">
+                        Build production-grade AI agent systems with detailed prerequisites and step-by-step guidance
+                    </p>
+                    <div class="learning-path-box">
+                        <h3>📖 Your Learning Path</h3>
+                        <p><strong>Chapter 1-4:</strong> Getting Started & Prerequisites</p>
+                        <p><strong>Chapter 5-11:</strong> Prompt Engineering Fundamentals</p>
+                        <p><strong>Chapter 12-30+:</strong> Agent Frameworks Deep Dive</p>
+                        <p><strong>Chapter 31-37:</strong> Context Engineering</p>
+                        <p><strong>Chapter 38-47:</strong> Real-World Applications (V1-V5)</p>
+                        <p><strong>Chapter 48-51:</strong> Production Patterns</p>
+                    </div>
+                    <p style="color: #999; margin-top: 24px;">Select a chapter from the left sidebar to begin</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let chapterCounter = 0;
+
+        // Complete bootcamp structure
+        const bootcamp = [
+            {
+                topic: "Getting Started",
+                range: "1-4",
+                chapters: [
+                    { name: "Prerequisites & Setup", file: "getting-started/00-START-HERE.md" },
+                    { name: "Environment Setup", file: "getting-started/00-README.md" },
+                    { name: "Bootcamp Overview", file: "getting-started/00-BOOTCAMP-COMPLETE-STATUS.md" },
+                    { name: "Optional Sections", file: "getting-started/00-OPTIONAL-SECTION-GUIDE.md" }
+                ]
+            },
+            {
+                topic: "Prompt Engineering",
+                range: "5-11",
+                chapters: [
+                    { name: "Fundamentals", file: "prompt-engineering/01-PROMPT-ENGINEERING-101.md" },
+                    { name: "Exercises", file: "prompt-engineering/01-PROMPT-ENGINEERING-EXERCISES.md" },
+                    { name: "Raw SDK Example", file: "prompt-engineering/01-PROMPT-ENGINEERING-example-01-raw-sdk.py" },
+                    { name: "LangChain Example", file: "prompt-engineering/01-PROMPT-ENGINEERING-example-02-langchain.py" },
+                    { name: "LangGraph Example", file: "prompt-engineering/01-PROMPT-ENGINEERING-example-03-langgraph.py" },
+                    { name: "AutoGen Example", file: "prompt-engineering/01-PROMPT-ENGINEERING-example-04-autogen.py" },
+                    { name: "CrewAI Example", file: "prompt-engineering/01-PROMPT-ENGINEERING-example-05-crewai.py" }
+                ]
+            },
+            {
+                topic: "Agent Frameworks",
+                range: "12-30",
+                chapters: [
+                    { name: "Setup Guide", file: "agent-frameworks/01-SETUP-WEEK1.md" },
+                    { name: "Week 1 Overview", file: "agent-frameworks/01-WEEK1-DAY1-INDEX.md" },
+                    { name: "Summary", file: "agent-frameworks/WEEK1-DAY2-SUMMARY.md" },
+                    { name: "Framework Comparison", file: "agent-frameworks/overview/19-COMPLETE-FRAMEWORK-COMPARISON.md" },
+                    { name: "Common Mistakes", file: "agent-frameworks/overview/04-WHAT-WAS-WRONG-AND-FIXED.md" },
+                    { name: "Raw SDK", file: "agent-frameworks/frameworks/raw-sdk/04-RAW-SDK-MODERN.html" },
+                    { name: "LangChain", file: "agent-frameworks/frameworks/langchain/05-LANGCHAIN-MODERN.html" },
+                    { name: "LangGraph", file: "agent-frameworks/frameworks/langgraph/06-LANGGRAPH-MODERN.html" },
+                    { name: "AutoGen", file: "agent-frameworks/frameworks/autogen/07-AUTOGEN-MODERN.html" },
+                    { name: "CrewAI", file: "agent-frameworks/frameworks/crewai/08-CREWAI-MODERN.html" },
+                    { name: "Semantic Kernel", file: "agent-frameworks/frameworks/semantic-kernel/10-SEMANTIC-KERNEL-MODERN.html" },
+                    { name: "Haystack", file: "agent-frameworks/frameworks/haystack/11-HAYSTACK-MODERN.html" },
+                    { name: "DSPy", file: "agent-frameworks/frameworks/dspy/12-DSPY-MODERN.html" },
+                    { name: "PhiData", file: "agent-frameworks/frameworks/phidata/13-PHIDATA-MODERN.html" },
+                    { name: "Vercel AI", file: "agent-frameworks/frameworks/vercel-ai/14-VERCEL-AI-MODERN.html" }
+                ]
+            },
+            {
+                topic: "Context Engineering",
+                range: "31-37",
+                chapters: [
+                    { name: "Fundamentals", file: "context-engineering/24-CONTEXT-ENGINEERING-101.md" },
+                    { name: "Setup", file: "context-engineering/25-SETUP-WEEK2.md" },
+                    { name: "Exercises", file: "context-engineering/26-CONTEXT-ENGINEERING-EXERCISES.md" },
+                    { name: "Framework Summary", file: "context-engineering/29-36-FRAMEWORK-CONTEXT-SUMMARY.md" },
+                    { name: "Advanced Patterns", file: "context-engineering/39-ADVANCED-CONTEXT-PATTERNS.md" },
+                    { name: "Raw SDK Implementation", file: "context-engineering/implementations/27-RAW-SDK-CONTEXT.py" },
+                    { name: "LangChain Implementation", file: "context-engineering/implementations/28-LANGCHAIN-CONTEXT.py" }
+                ]
+            },
+            {
+                topic: "Real-World Apps",
+                range: "38-47",
+                chapters: [
+                    { name: "Overview", file: "real-world-applications/57-WEEK3-OVERVIEW.md" },
+                    { name: "V1: Simple MVP", file: "real-world-applications/v1-simple-mvp/58-V1-SIMPLE-MVP.py" },
+                    { name: "V2: Multi-Turn", file: "real-world-applications/v2-multi-turn/59-V2-MULTI-TURN.py" },
+                    { name: "V2: Guide", file: "real-world-applications/v2-multi-turn/64-V2-DETAILED-GUIDE.md" },
+                    { name: "V3: Tool Agent", file: "real-world-applications/v3-tool-agent/60-V3-TOOL-AGENT.py" },
+                    { name: "V3: Guide", file: "real-world-applications/v3-tool-agent/65-V3-DETAILED-GUIDE.md" },
+                    { name: "V4: Multi-Agent", file: "real-world-applications/v4-multi-agent/61-V4-MULTI-AGENT.py" },
+                    { name: "V4: Guide", file: "real-world-applications/v4-multi-agent/66-V4-DETAILED-GUIDE.md" },
+                    { name: "V5: Production", file: "real-world-applications/v5-production/62-V5-PRODUCTION.py" },
+                    { name: "V5: Guide", file: "real-world-applications/v5-production/67-V5-DETAILED-GUIDE.md" }
+                ]
+            },
+            {
+                topic: "Production Patterns",
+                range: "48-51",
+                chapters: [
+                    { name: "Planning", file: "production-patterns/WEEK4-PLANNING.md" }
+                ]
+            },
+            {
+                topic: "Reference",
+                range: "REF",
+                chapters: [
+                    { name: "Technology Stack", file: "reference/TECHNOLOGY-STACK.md" },
+                    { name: "CCA-F Mapping", file: "reference/CCA-F-CERTIFICATION-MAPPING.md" },
+                    { name: "Learning Path", file: "reference/LEARNING-PATH-16WEEKS.md" },
+                    { name: "Roadmap", file: "reference/22-COMPLETE-BOOTCAMP-ROADMAP.md" }
+                ]
+            },
+            {
+                topic: "Documentation",
+                range: "REF",
+                chapters: [
+                    { name: "GitHub Ready", file: "docs/BOOTCAMP-READY-FOR-GITHUB.md" },
+                    { name: "GitHub Pages", file: "docs/GITHUB-PAGES-DEPLOYMENT.md" },
+                    { name: "Manifest", file: "docs/ALL-FILES-MANIFEST.md" }
+                ]
+            }
+        ];
+
+        // Build sidebar
+        function buildSidebar() {
+            const sidebar = document.getElementById("sidebar-content");
+            
+            bootcamp.forEach(section => {
+                const topicDiv = document.createElement("div");
+                topicDiv.className = "topic-group";
+                
+                const topicBtn = document.createElement("button");
+                topicBtn.className = "topic-toggle collapsed";
+                topicBtn.innerHTML = `<span>${section.topic}</span><span class="topic-range">${section.range}</span>`;
+                
+                const chaptersList = document.createElement("div");
+                chaptersList.className = "chapters-list";
+                
+                section.chapters.forEach(ch => {
+                    chapterCounter++;
+                    const num = chapterCounter;
+                    
+                    const link = document.createElement("a");
+                    link.className = "chapter-item";
+                    link.href = "#";
+                    link.innerHTML = `
+                        <span class="chapter-number">${num}</span>
+                        <span class="chapter-name">${ch.name}</span>
+                    `;
+                    
+                    link.addEventListener("click", e => {
+                        e.preventDefault();
+                        loadChapter(ch.name, ch.file, section.topic);
+                        document.querySelectorAll(".chapter-item").forEach(item => item.classList.remove("active"));
+                        link.classList.add("active");
+                    });
+                    
+                    chaptersList.appendChild(link);
+                });
+                
+                topicBtn.addEventListener("click", () => {
+                    topicBtn.classList.toggle("collapsed");
+                    chaptersList.classList.toggle("active");
+                    topicBtn.classList.toggle("active");
+                });
+                
+                topicDiv.appendChild(topicBtn);
+                topicDiv.appendChild(chaptersList);
+                sidebar.appendChild(topicDiv);
+            });
+        }
+
+        // Load chapter
+        async function loadChapter(name, file, topic) {
+            const title = document.getElementById("page-title");
+            const breadcrumb = document.getElementById("breadcrumb");
+            const content = document.getElementById("content-area");
+            
+            title.textContent = name;
+            breadcrumb.textContent = `${topic} > ${name}`;
+            content.innerHTML = "<p style='text-align: center; padding: 40px; color: #999;'>Loading...</p>";
+            
+            try {
+                const response = await fetch(file);
+                if (!response.ok) throw new Error("File not found");
+                
+                const text = await response.text();
+                
+                if (file.endsWith(".md")) {
+                    content.innerHTML = markdownToHtml(text);
+                } else if (file.endsWith(".py")) {
+                    content.innerHTML = `<pre><code>${escapeHtml(text)}</code></pre>`;
+                } else if (file.endsWith(".html")) {
+                    content.innerHTML = text;
+                } else {
+                    content.innerHTML = `<pre><code>${escapeHtml(text)}</code></pre>`;
+                }
+            } catch (e) {
+                content.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #999;">
+                        <p><strong>${name}</strong></p>
+                        <p style="margin-top: 12px; font-size: 12px;">File: ${file}</p>
+                        <p style="margin-top: 8px; font-size: 12px;">Extract the ZIP file to view content</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Markdown to HTML converter
+        function markdownToHtml(md) {
+            let html = md;
+            html = html.replace(/^### (.*?)$/gm, "<h3>$1</h3>");
+            html = html.replace(/^## (.*?)$/gm, "<h2>$1</h2>");
+            html = html.replace(/^# (.*?)$/gm, "<h1>$1</h1>");
+            html = html.replace(/```([^`]+)```/gs, (m, c) => `<pre><code>${escapeHtml(c.trim())}</code></pre>`);
+            html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+            html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+            html = html.replace(/__(.*?)__/g, "<strong>$1</strong>");
+            html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+            html = html.replace(/^\* (.*?)$/gm, "<li>$1</li>");
+            html = html.replace(/^\- (.*?)$/gm, "<li>$1</li>");
+            html = html.replace(/(<li>.*?<\/li>)/s, "<ul>$1</ul>");
+            html = html.split("\n\n").map(p => p.match(/^<(h|ul|ol|pre)/) ? p : `<p>${p}</p>`).join("\n");
+            return html;
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const map = {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"};
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // Initialize
+        document.addEventListener("DOMContentLoaded", buildSidebar);
+    </script>
+</body>
+</html>
