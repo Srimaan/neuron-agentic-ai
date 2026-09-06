@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCA-F Deep: Chapter 1 - Agentic AI Architecture (Expert Level)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #fafafa;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: none;
+            padding: 40px;
+        }
+
+        .header {
+            background: #ffffff;
+            padding: 40px 0;
+            color: #333;
+            text-align: center;
+            border-bottom: 3px solid #667eea;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 40px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .header .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .header .level-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .content {
+            padding: 60px 40px;
+        }
+
+        .section {
+            margin-bottom: 80px;
+        }
+
+        .section h2 {
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: #667eea;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 15px;
+        }
+
+        .section h3 {
+            font-size: 20px;
+            color: #333;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            border-left: 3px solid #48c774;
+            padding-left: 15px;
+        }
+
+        .section h4 {
+            font-size: 16px;
+            color: #333;
+            margin-top: 20px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .text-block {
+            font-size: 14px;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .code-block {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .code-label {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .card {
+            background: white;
+            border-left: 4px solid;
+            padding: 25px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+        }
+
+        .card.blue { border-left-color: #667eea; }
+        .card.green { border-left-color: #48c774; }
+        .card.orange { border-left-color: #ff9500; }
+        .card.purple { border-left-color: #a855f7; }
+        .card.pink { border-left-color: #ec4899; }
+
+        .card h4 {
+            color: #88ccff;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .card p {
+            font-size: 13px;
+            color: #a0a0a0;
+            line-height: 1.6;
+        }
+
+        .framework-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            background: #0d1117;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .framework-table th {
+            background: #161b22;
+            color: #79c0ff;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #30363d;
+            font-size: 13px;
+        }
+
+        .framework-table td {
+            padding: 15px;
+            border-bottom: 1px solid #30363d;
+            font-size: 13px;
+        }
+
+        .framework-table tr:hover {
+            background: #161b22;
+        }
+
+        .framework-table .rating {
+            color: #79c0ff;
+            font-weight: 600;
+        }
+
+        .highlight-warning {
+            background: linear-gradient(135deg, #2d1b00 0%, #1a1000 100%);
+            border-left: 4px solid #ff9500;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+
+        .highlight-warning h4 {
+            color: #ffaa88;
+            margin-bottom: 10px;
+        }
+
+        .highlight-warning p {
+            color: #c0a080;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .highlight-tip {
+            background: linear-gradient(135deg, #0d2b1f 0%, #081512 100%);
+            border-left: 4px solid #48c774;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+
+        .highlight-tip h4 {
+            color: #88ff88;
+            margin-bottom: 10px;
+        }
+
+        .highlight-tip p {
+            color: #88cc88;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .comparison-matrix {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 30px 0;
+            overflow-x: auto;
+        }
+
+        .comparison-matrix table {
+            width: 100%;
+            font-size: 12px;
+        }
+
+        .comparison-matrix th {
+            background: #161b22;
+            color: #79c0ff;
+            padding: 12px;
+            text-align: left;
+            border-bottom: 2px solid #30363d;
+        }
+
+        .comparison-matrix td {
+            padding: 12px;
+            border-bottom: 1px solid #30363d;
+            color: #a0a0a0;
+        }
+
+        .score-row {
+            background: #161b22;
+            font-weight: 600;
+            color: #79c0ff;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .feature-list li {
+            padding: 12px 0;
+            padding-left: 30px;
+            position: relative;
+            font-size: 13px;
+            color: #a0a0a0;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+
+        .feature-list li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .section-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #333, transparent);
+            margin: 60px 0;
+        }
+
+        .exercise-intro {
+            background: linear-gradient(135deg, #1a2b4d 0%, #0d1a2d 100%);
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .exercise-intro h3 {
+            color: #88ccff;
+            border-left: 0;
+            padding-left: 0;
+            margin-top: 0;
+        }
+
+        .learning-outcomes {
+            background: #161b22;
+            border-left: 4px solid #48c774;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+
+        .learning-outcomes h4 {
+            color: #88ff88;
+            margin-bottom: 15px;
+        }
+
+        .learning-outcomes ol {
+            margin-left: 20px;
+        }
+
+        .learning-outcomes li {
+            color: #a0a0a0;
+            font-size: 13px;
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .diagram-placeholder {
+            background: #161b22;
+            border: 2px dashed #30363d;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            color: #666;
+            margin: 30px 0;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer {
+            background: #0d1117;
+            border-top: 1px solid #30363d;
+            padding: 40px;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .toc {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 50px;
+        }
+
+        .toc h3 {
+            border-left: 0;
+            padding-left: 0;
+            color: #79c0ff;
+            margin-top: 0;
+        }
+
+        .toc ol {
+            margin-left: 20px;
+        }
+
+        .toc li {
+            color: #a0a0a0;
+            font-size: 13px;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .section h2 {
+                font-size: 28px;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .content {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>🏗️ Agentic AI Architecture (DEEP)</h1>
+            <p class="subtitle">Expert-Level Hands-On Training</p>
+            <p class="subtitle">Build Production-Grade Agents with Multiple Frameworks</p>
+            <span class="level-badge">⚙️ Advanced | 40+ Hours | Practical Focus</span>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+            <!-- TABLE OF CONTENTS -->
+            <div class="toc">
+                <h3>📚 Chapter Structure</h3>
+                <ol>
+                    <li><strong>Section 1:</strong> Agentic AI Fundamentals (Philosophy + Practical)</li>
+                    <li><strong>Section 2:</strong> Agent Anatomy & Building Blocks (Memory, Tools, Loops)</li>
+                    <li><strong>Section 3:</strong> Framework Landscape (Comparative Analysis)</li>
+                    <li><strong>Section 4:</strong> Claude SDK Deep Dive (Official Best Practices)</li>
+                    <li><strong>Section 5:</strong> LangChain Agents (ReAct + Memory Patterns)</li>
+                    <li><strong>Section 6:</strong> LangGraph (State Machines & Complex Flows)</li>
+                    <li><strong>Section 7:</strong> Multi-Agent Systems (Coordination & Communication)</li>
+                    <li><strong>Section 8:</strong> Production Architecture (Memory, Monitoring, Safety)</li>
+                    <li><strong>Section 9:</strong> Hands-On Exercises (6 Progressive Tutorials)</li>
+                    <li><strong>Section 10:</strong> Scenario-Based Assessment (Deep Probing Questions)</li>
+                </ol>
+            </div>
+
+            <!-- SECTION 1: FUNDAMENTALS -->
+            <div class="section">
+                <h2>Section 1: Agentic AI Fundamentals</h2>
+
+                <h3>1.1 What is an Agent? (Philosophy + Practical Definition)</h3>
+
+                <div class="text-block">
+                    <strong>Philosophical Definition:</strong><br>
+                    An agent is a system that perceives its environment, reasons about it, and autonomously 
+                    takes actions to achieve specific goals—without explicit human intervention at each step.
+                </div>
+
+                <div class="text-block">
+                    <strong>Practical Engineering Definition:</strong><br>
+                    An agent is a loop that:
+                    <ul class="feature-list">
+                        <li>**Perceives** context, user intent, environment state, and previous results</li>
+                        <li>**Reasons** using LLM to decide next action from available tools</li>
+                        <li>**Acts** by executing selected tools and capturing results</li>
+                        <li>**Reflects** on outcomes to decide: continue loop or exit?</li>
+                    </ul>
+                </div>
+
+                <div class="highlight-tip">
+                    <h4>💡 Key Insight: The Fundamental Difference</h4>
+                    <p>
+                        A **chatbot** waits for user input and responds.
+                        A **workflow** follows a predetermined sequence.
+                        An **agent** autonomously decides its next action based on reasoning.
+                    </p>
+                </div>
+
+                <h3>1.2 Why Build Agents? (Real-World Use Cases)</h3>
+
+                <div class="card-grid">
+                    <div class="card blue">
+                        <h4>🔬 Research & Analysis</h4>
+                        <p>Autonomous research agents that search web, analyze docs, synthesize findings without human guidance at each step</p>
+                    </div>
+
+                    <div class="card green">
+                        <h4>🛠️ Software Engineering</h4>
+                        <p>Code generation agents that understand requirements, plan implementation, write code, test, debug iteratively</p>
+                    </div>
+
+                    <div class="card orange">
+                        <h4>📊 Data Analysis</h4>
+                        <p>Data agents that explore datasets, formulate hypotheses, run analyses, create visualizations autonomously</p>
+                    </div>
+
+                    <div class="card purple">
+                        <h4>💼 Business Operations</h4>
+                        <p>Operational agents handling customer inquiries, resolving issues, escalating appropriately without manual triage</p>
+                    </div>
+
+                    <div class="card pink">
+                        <h4>🧪 Scientific Discovery</h4>
+                        <p>Research agents designing experiments, analyzing results, formulating new hypotheses in scientific domains</p>
+                    </div>
+                </div>
+
+                <h3>1.3 Five Dimensions of Agent Design (Deep Analysis)</h3>
+
+                <h4>① Autonomy Level</h4>
+                <div class="text-block">
+                    <strong>Spectrum:</strong> Supervised → Gated → Autonomous<br><br>
+                    <strong>Supervised:</strong> Every action requires human approval before execution
+                    <ul class="feature-list">
+                        <li>User sees: "Agent suggests X, approve? Y/N"</li>
+                        <li>Real example: Compliance-critical financial transactions</li>
+                        <li>Cost: Every action = human latency (seconds to minutes)</li>
+                    </ul>
+                    <strong>Gated:</strong> Critical actions require approval, routine actions execute freely
+                    <ul class="feature-list">
+                        <li>User sees: Notifications only for significant decisions</li>
+                        <li>Real example: Data operations (read approved, write/delete gated)</li>
+                        <li>Cost: Medium (only critical actions blocked)</li>
+                    </ul>
+                    <strong>Autonomous:</strong> Agent executes all decisions, human reviews results
+                    <ul class="feature-list">
+                        <li>User sees: Final results + decision log</li>
+                        <li>Real example: Research agents, code generation</li>
+                        <li>Cost: Fast (no approval latency) but higher risk</li>
+                    </ul>
+                </div>
+
+                <h4>② Tool Access & Sandboxing</h4>
+                <div class="text-block">
+                    <strong>Principle:</strong> Least privilege access for maximum safety
+                    <ul class="feature-list">
+                        <li><strong>Read-Only:</strong> Access databases, APIs, documents for information only</li>
+                        <li><strong>Safe Mutations:</strong> Create, update non-critical data; delete forbidden</li>
+                        <li><strong>Full Access:</strong> Can create, update, delete anything</li>
+                        <li><strong>Sandboxed Execution:</strong> Code runs in isolated environment; can't access production</li>
+                    </ul>
+                </div>
+
+                <div class="highlight-warning">
+                    <h4>⚠️ Critical Design Pattern: Gradual Escalation</h4>
+                    <p>
+                        Don't grant full access to new agents. Start with read-only tools. 
+                        After validation, grant safe mutations. Monitor extensively before full access.
+                        This prevents catastrophic failures from reasoning mistakes.
+                    </p>
+                </div>
+
+                <h4>③ Error Recovery Strategy</h4>
+                <div class="text-block">
+                    <strong>Levels (ordered by resilience):</strong>
+                    <ul class="feature-list">
+                        <li><strong>Fail-Fast:</strong> Error encountered → stop immediately, return error</li>
+                        <li><strong>Retry Logic:</strong> Transient error → retry 3x with exponential backoff</li>
+                        <li><strong>Fallback Tools:</strong> Tool A failed → try alternate Tool B</li>
+                        <li><strong>Human Escalation:</strong> Repeated failures → notify human, wait for input</li>
+                        <li><strong>Circuit Breaker:</strong> Tool fails repeatedly → disable temporarily, resume later</li>
+                    </ul>
+                </div>
+
+                <h4>④ State & Memory Architecture</h4>
+                <div class="text-block">
+                    <strong>Three memory tiers in modern agents:</strong>
+                    <ul class="feature-list">
+                        <li><strong>Context Window Memory:</strong> Current message history (4K to 200K tokens)</li>
+                        <li><strong>Long-Term Memory:</strong> Database storage (persistent, queryable)</li>
+                        <li><strong>Semantic Memory:</strong> Vector embeddings of key information (similarity search)</li>
+                    </ul>
+                    <strong>Critical Question:</strong> If agent crashes/restarts, is memory lost?
+                    <ul class="feature-list">
+                        <li>In-memory only → YES, lost (dangerous for production)</li>
+                        <li>Database persisted → NO, recoverable</li>
+                        <li>Hybrid → Depends on what you persist</li>
+                    </ul>
+                </div>
+
+                <h4>⑤ Loop Termination Conditions</h4>
+                <div class="text-block">
+                    <strong>Production agents need multiple termination signals:</strong>
+                    <ul class="feature-list">
+                        <li><strong>Goal Achievement:</strong> Agent declares "task complete" (LLM judgment)</li>
+                        <li><strong>Max Iterations:</strong> Safety limit (e.g., 10 loops max)</li>
+                        <li><strong>Token Budget:</strong> Cost control (e.g., $0.50 spent → stop)</li>
+                        <li><strong>Time Limit:</strong> Latency SLA (e.g., 60 seconds max)</li>
+                        <li><strong>Stuck Detection:</strong> Repeated tool calls → agent spinning wheels</li>
+                    </ul>
+                </div>
+
+                <div class="highlight-warning">
+                    <h4>⚠️ Common Production Failure: Infinite Loops</h4>
+                    <p>
+                        Many agents fail by entering infinite loops where the LLM keeps calling tools 
+                        that return the same result. Always implement loop detection: track which tools 
+                        were called, detect repetition, break the loop after N identical calls.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="section-divider"></div>
+
+            <!-- SECTION 2: AGENT ANATOMY -->
+            <div class="section">
+                <h2>Section 2: Agent Anatomy & Building Blocks</h2>
+
+                <h3>2.1 The Agent Loop (Detailed Breakdown)</h3>
+
+                <div class="diagram-placeholder">
+                    <div style="text-align: left;">
+                        <strong>Phase ①: GATHER CONTEXT</strong><br>
+                        ↓ Collect user intent, conversation history, environment state, available tools<br><br>
+                        <strong>Phase ②: REASON & DECIDE</strong><br>
+                        ↓ LLM analyzes: what's the goal? What tools needed? In what order?<br><br>
+                        <strong>Phase ③: TAKE ACTION</strong><br>
+                        ↓ Execute selected tools, capture results, handle errors<br><br>
+                        <strong>Phase ④: OBSERVE & REFLECT</strong><br>
+                        ↓ Did action succeed? Is goal achieved? Should I continue?<br><br>
+                        ↻ Loop back to Phase ① or EXIT
+                    </div>
+                </div>
+
+                <h3>2.2 Tool Design Patterns</h3>
+
+                <div class="text-block">
+                    <strong>Tools are the agent's hands. Good tool design makes or breaks agents.</strong>
+                </div>
+
+                <h4>Tool Granularity: The Goldilocks Problem</h4>
+                <div class="code-block">
+                    <div class="code-label">Too Fine-Grained (Bad)</div>
+                    <code>
+tools = [
+    get_db_connection(),  # Agent must compose DB calls
+    execute_query(),
+    close_connection(),
+]
+                    </code>
+                </div>
+
+                <div class="text-block">
+                    Agent must manually manage 3 tools for simple query. Error-prone.
+                </div>
+
+                <div class="code-block">
+                    <div class="code-label">Too Coarse-Grained (Bad)</div>
+                    <code>
+tools = [
+    do_everything(),  # Single monolithic tool
+]
+                    </code>
+                </div>
+
+                <div class="text-block">
+                    Agent has no way to do specific tasks. Inflexible.
+                </div>
+
+                <div class="code-block">
+                    <div class="code-label">Just Right (Good)</div>
+                    <code>
+tools = [
+    search_database(query, filters),     # Specific, composable
+    fetch_user_profile(user_id),
+    execute_transaction(details),
+]
+                    </code>
+                </div>
+
+                <div class="text-block">
+                    Agent can use tools independently but compose them logically. Perfect.
+                </div>
+
+                <h4>Tool Error Handling: Critical Pattern</h4>
+                <div class="code-block">
+                    <div class="code-label">Python: Proper Tool Error Handling</div>
+                    <code>
+def search_api(query: str, limit: int = 10) -> dict:
+    """
+    Search external API and return results.
+    
+    Raises:
+        APIConnectionError: API unreachable
+        RateLimitError: Rate limit exceeded
+        InvalidQueryError: Malformed query
+    
+    Returns:
+        {"status": "success", "results": [...]}
+        {"status": "error", "message": "...", "retry_after": 60}
+    """
+    try:
+        response = requests.get(
+            "https://api.example.com/search",
+            params={"q": query, "limit": limit},
+            timeout=5
+        )
+        if response.status_code == 429:
+            return {
+                "status": "error",
+                "message": "Rate limited",
+                "retry_after": int(response.headers.get("Retry-After", 60))
+            }
+        return {"status": "success", "results": response.json()}
+    except requests.ConnectionError as e:
+        return {
+            "status": "error",
+            "message": f"API unreachable: {str(e)}",
+            "recoverable": True
+        }
+                    </code>
+                </div>
+
+                <div class="highlight-tip">
+                    <h4>💡 Tool Design Principle: Return Results, Not Errors</h4>
+                    <p>
+                        Tools should never crash the agent with exceptions. Instead, return structured 
+                        error responses the LLM can understand and handle. This allows agents to 
+                        implement their own recovery strategies.
+                    </p>
+                </div>
+
+                <h3>2.3 Memory Architectures in Agents</h3>
+
+                <h4>In-Memory Only (Simple, Ephemeral)</h4>
+                <div class="code-block">
+                    <div class="code-label">Python: Simple In-Memory Agent Memory</div>
+                    <code>
+class SimpleAgent:
+    def __init__(self):
+        self.messages = []      # Lost if process crashes!
+        self.context = {}
+    
+    def add_message(self, role, content):
+        self.messages.append({"role": role, "content": content})
+                    </code>
+                </div>
+
+                <div class="text-block">
+                    <strong>Pros:</strong> Simple, fast, no DB overhead<br>
+                    <strong>Cons:</strong> Process crash = memory lost, not shareable across replicas<br>
+                    <strong>Use Case:</strong> Prototypes, testing, single-turn interactions
+                </div>
+
+                <h4>Database-Persisted Memory (Reliable, Recoverable)</h4>
+                <div class="code-block">
+                    <div class="code-label">Python: Database-Backed Agent Memory</div>
+                    <code>
+class PersistentAgent:
+    def __init__(self, agent_id: str, db: Database):
+        self.agent_id = agent_id
+        self.db = db
+        self.messages = []  # Loaded from DB
+    
+    def load_from_db(self):
+        """Load conversation history from database"""
+        self.messages = self.db.query(
+            "SELECT * FROM agent_messages WHERE agent_id = ?",
+            (self.agent_id,)
+        )
+    
+    def add_message(self, role: str, content: str):
+        """Add message AND persist to DB immediately"""
+        msg = {"role": role, "content": content, "timestamp": now()}
+        self.messages.append(msg)
+        # Critical: persist immediately, don't wait
+        self.db.insert("agent_messages", msg)
+                    </code>
+                </div>
+
+                <div class="text-block">
+                    <strong>Pros:</strong> Survives crashes, recoverable, can scale to multiple replicas<br>
+                    <strong>Cons:</strong> DB latency, more complex<br>
+                    <strong>Use Case:</strong> Production agents, long-running tasks
+                </div>
+
+                <h4>Semantic Memory with Embeddings (Smart Retrieval)</h4>
+                <div class="code-block">
+                    <div class="code-label">Python: Semantic Memory with Vector Store</div>
+                    <code>
+class SemanticAgent:
+    def __init__(self, agent_id: str, vector_store: VectorDB):
+        self.agent_id = agent_id
+        self.vector_store = vector_store  # Pinecone, Weaviate, Milvus
+    
+    def remember_fact(self, fact: str):
+        """Store fact with semantic embedding"""
+        embedding = embed_text(fact)  # Convert to vector
+        self.vector_store.upsert({
+            "id": f"{self.agent_id}_{timestamp()}",
+            "vector": embedding,
+            "metadata": {"agent_id": self.agent_id, "text": fact}
+        })
+    
+    def retrieve_relevant_facts(self, query: str, limit: int = 5):
+        """Find facts semantically similar to query"""
+        query_embedding = embed_text(query)
+        results = self.vector_store.query(
+            query_embedding,
+            filter={"agent_id": self.agent_id},
+            top_k=limit
+        )
+        return [r["metadata"]["text"] for r in results]
+                    </code>
+                </div>
+
+                <div class="text-block">
+                    <strong>Pros:</strong> Intelligent retrieval (not just keyword matching), scales to large knowledge bases<br>
+                    <strong>Cons:</strong> Embedding cost, vector DB complexity<br>
+                    <strong>Use Case:</strong> Long-term knowledge accumulation, cross-domain reasoning
+                </div>
+
+                <div class="highlight-warning">
+                    <h4>⚠️ Memory Pitfall: Context Window Overflow</h4>
+                    <p>
+                        If your agent has 100 previous messages but Claude's context is only 200K tokens, 
+                        you can't fit all history. Solutions: (1) Summarize old messages, (2) Only load 
+                        recent N messages, (3) Embed messages and retrieve semantically relevant ones.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="section-divider"></div>
+
+            <!-- SECTION 3: FRAMEWORK LANDSCAPE -->
+            <div class="section">
+                <h2>Section 3: Agent Framework Landscape</h2>
+
+                <h3>3.1 Framework Comparison Matrix</h3>
+
+                <div class="learning-outcomes">
+                    <h4>What You'll Learn</h4>
+                    <ol>
+                        <li>How to evaluate frameworks for your use case</li>
+                        <li>Strengths and weaknesses of each framework</li>
+                        <li>When to use which framework</li>
+                        <li>Migration paths between frameworks</li>
+                    </ol>
+                </div>
+
+                <div class="comparison-matrix">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Framework</th>
+                                <th>Learning Curve</th>
+                                <th>Flexibility</th>
+                                <th>Production Ready</th>
+                                <th>Memory Support</th>
+                                <th>Multi-Agent</th>
+                                <th>Best For</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Claude SDK</strong></td>
+                                <td>⭐ Very Easy</td>
+                                <td>⭐⭐⭐⭐ Very High</td>
+                                <td>⭐⭐⭐⭐⭐ Yes</td>
+                                <td>You control</td>
+                                <td>Custom</td>
+                                <td>Full control agents</td>
+                            </tr>
+                            <tr>
+                                <td><strong>LangChain</strong></td>
+                                <td>⭐⭐ Moderate</td>
+                                <td>⭐⭐⭐ Medium</td>
+                                <td>⭐⭐⭐ Partial</td>
+                                <td>Built-in</td>
+                                <td>No</td>
+                                <td>Simple to moderate</td>
+                            </tr>
+                            <tr>
+                                <td><strong>LangGraph</strong></td>
+                                <td>⭐⭐⭐ Harder</td>
+                                <td>⭐⭐⭐⭐ Very High</td>
+                                <td>⭐⭐⭐⭐ Very Yes</td>
+                                <td>Graph-based</td>
+                                <td>Yes</td>
+                                <td>Complex flows</td>
+                            </tr>
+                            <tr>
+                                <td><strong>AutoGen</strong></td>
+                                <td>⭐⭐⭐ Harder</td>
+                                <td>⭐⭐⭐ Medium</td>
+                                <td>⭐⭐⭐ Partial</td>
+                                <td>Built-in</td>
+                                <td>⭐⭐⭐⭐⭐ Native</td>
+                                <td>Multi-agent systems</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Crew AI</strong></td>
+                                <td>⭐ Very Easy</td>
+                                <td>⭐⭐ Low</td>
+                                <td>⭐⭐⭐ Partial</td>
+                                <td>Built-in</td>
+                                <td>⭐⭐⭐⭐ Good</td>
+                                <td>Team-like agents</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>3.2 Detailed Framework Profiles</h3>
+
+                <h4>Claude SDK (Anthropic Official)</h4>
+                <div class="card blue">
+                    <h4>🎯 Core Philosophy</h4>
+                    <p>
+                        Anthropic's official SDK for building Claude agents. 
+                        Minimal abstractions. You control everything (which means maximum responsibility).
+                    </p>
+                </div>
+
+                <div class="text-block">
+                    <strong>What It Provides:</strong>
+                    <ul class="feature-list">
+                        <li>API calls to Claude (text, vision)</li>
+                        <li>Tool use definitions and execution</li>
+                        <li>Message management (you build memory)</li>
+                        <li>Streaming support</li>
+                    </ul>
+                    <strong>What You Must Build:</strong>
+                    <ul class="feature-list">
+                        <li>Agent loop logic (Gather → Reason → Act → Reflect)</li>
+                        <li>Memory persistence</li>
+                        <li>Error handling</li>
+                        <li>Tool orchestration</li>
+                    </ul>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-label">Claude SDK: Minimal Agent Loop</div>
+                    <code>
+from anthropic import Anthropic
+
+client = Anthropic()
+tools = [
+    {
+                        "name": "search",
+                        "description": "Search the web",
+                        "input_schema": {...}
+                    }
+                ]
+messages = []
+
+# Phase ①: Gather context
+user_query = "Research recent AI breakthroughs"
+
+# Phase ②: Reason & Decide
+response = client.messages.create(
+    model="claude-3-5-sonnet-20241022",
+    max_tokens=1024,
+    tools=tools,
+    messages=[{"role": "user", "content": user_query}]
+)
+
+# Phase ③: Take action
+if response.stop_reason == "tool_use":
+    tool_call = response.content[1]  # Get tool use block
+    tool_result = execute_tool(tool_call.name, tool_call.input)
+    
+# Phase ④: Observe & Reflect
+messages.append({"role": "assistant", "content": response.content})
+messages.append({"role": "user", "content": tool_result})
+
+# Loop back or exit based on stop_reason
+                    </code>
+                </div>
+
+                <div class="highlight-tip">
+                    <h4>💡 Claude SDK Advantage: Pure Control</h4>
+                    <p>
+                        You see exactly what's happening at each step. No magical abstractions hiding decisions. 
+                        This is excellent for learning but requires you to implement everything correctly.
+                    </p>
+                </div>
+
+                <h4>LangChain (Popular Orchestration Library)</h4>
+                <div class="card green">
+                    <h4>🎯 Core Philosophy</h4>
+                    <p>
+                        "Chains" of components working together. Abstracts common patterns so you write less code. 
+                        Works with many LLMs (Claude, OpenAI, Gemini, etc.).
+                    </p>
+                </div>
+
+                <div class="text-block">
+                    <strong>What It Provides:</strong>
+                    <ul class="feature-list">
+                        <li>ReAct Agent implementation (Reasoning + Acting)</li>
+                        <li>Tool integration system</li>
+                        <li>Memory management (ConversationBuffer, Summary, Entity)</li>
+                        <li>Chain composition (prompt → LLM → output parser → tool)</li>
+                        <li>Callbacks for monitoring/logging</li>
+                    </ul>
+                    <strong>What You Build:</strong>
+                    <ul class="feature-list">
+                        <li>Tool definitions</li>
+                        <li>Agent initialization</li>
+                        <li>Custom output parsing if needed</li>
+                    </ul>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-label">LangChain: ReAct Agent (Much Less Code)</div>
+                    <code>
+from langchain.agents import Tool, AgentExecutor, create_react_agent
+from langchain_anthropic import ChatAnthropic
+from langchain import hub
+
+# 1. Define tools
+tools = [
+    Tool(
+                        name="Search",
+                        func=search_api,
+                        description="Search the web for information"
+                    )
+                ]
+
+# 2. Create agent
+llm = ChatAnthropic(model="claude-3-5-sonnet-20241022")
+prompt = hub.pull("hwchase17/react-chat")  # ReAct prompt template
+agent = create_react_agent(llm, tools, prompt)
+
+# 3. Run (LangChain handles loop internally!)
+executor = AgentExecutor.from_agent_and_tools(agent, tools)
+result = executor.invoke({"input": "Research recent AI breakthroughs"})
+                    </code>
+                </div>
+
+                <div class="highlight-warning">
+                    <h4>⚠️ LangChain Gotcha: "Magic" Abstractions</h4>
+                    <p>
+                        LangChain handles the loop for you, which is great for speed but bad for understanding. 
+                        If something goes wrong, you can't easily debug because you don't see each phase. 
+                        For learning and production debugging, consider Claude SDK first.
+                    </p>
+                </div>
+
+                <h4>LangGraph (State Machine-Based)</h4>
+                <div class="card orange">
+                    <h4>🎯 Core Philosophy</h4>
+                    <p>
+                        Modern approach: agents as state machines. Define nodes (functions), edges (transitions), 
+                        state structure (what changes). More complex initially but extremely flexible.
+                    </p>
+                </div>
+
+                <div class="text-block">
+                    <strong>When to Use LangGraph:</strong>
+                    <ul class="feature-list">
+                        <li>Complex multi-step workflows with conditional logic</li>
+                        <li>Multi-agent systems with coordination</li>
+                        <li>Agents that need human-in-the-loop decisions</li>
+                        <li>Graph-traversal problems (planning, routing)</li>
+                    </ul>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-label">LangGraph: State Machine Agent</div>
+                    <code>
+from langgraph.graph import StateGraph
+from typing import TypedDict, Annotated
+import operator
+
+class AgentState(TypedDict):
+    messages: Annotated[list, operator.add]  # Accumulate messages
+    current_tool: str
+    iterations: int
+
+def reasoning_node(state):
+    """Decide what tool to call"""
+    return {"current_tool": "search", "iterations": state["iterations"] + 1}
+
+def action_node(state):
+    """Execute the tool"""
+    if state["current_tool"] == "search":
+        return {"messages": [{"role": "assistant", "content": "Result"}]}
+
+def should_continue(state):
+    """Decide: continue loop or exit?"""
+    if state["iterations"] >= 10:
+        return "end"
+    return "reasoning"
+
+# Build graph
+graph = StateGraph(AgentState)
+graph.add_node("reasoning", reasoning_node)
+graph.add_node("action", action_node)
+graph.add_edge("reasoning", "action")
+graph.add_conditional_edges("action", should_continue, {
+    "end": "__end__",
+    "reasoning": "reasoning"
+})
+graph.set_entry_point("reasoning")
+compiled = graph.compile()
+
+# Run
+result = compiled.invoke({"messages": [], "iterations": 0})
+                    </code>
+                </div>
+
+                <div class="highlight-tip">
+                    <h4>💡 LangGraph Advantage: Explicit Control Flow</h4>
+                    <p>
+                        Every transition is defined. You can visualize the graph, understand exactly what happens 
+                        when, and handle edge cases explicitly. Perfect for complex production systems.
+                    </p>
+                </div>
+
+                <h4>AutoGen (Microsoft Multi-Agent)</h4>
+                <div class="card purple">
+                    <h4>🎯 Core Philosophy</h4>
+                    <p>
+                        Multiple agents collaborate. Each agent has a role (e.g., "Coder", "Executor", "Reviewer"). 
+                        Agents send messages to each other autonomously.
+                    </p>
+                </div>
+
+                <div class="text-block">
+                    <strong>Best For:</strong>
+                    <ul class="feature-list">
+                        <li>Simulating team dynamics (multiple agents debating)</li>
+                        <li>Code generation with human review</li>
+                        <li>Complex reasoning (multiple perspectives)</li>
+                        <li>Teaching multi-agent concepts</li>
+                    </ul>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-label">AutoGen: Two-Agent Collaboration</div>
+                    <code>
+from autogen import AssistantAgent, UserProxyAgent
+
+# Agent 1: Coder
+coder = AssistantAgent(
+    name="Coder",
+    llm_config={"config_list": [{"model": "claude-3-5-sonnet", ...}]}
+)
+
+# Agent 2: Executor (simulates user)
+executor = UserProxyAgent(
+    name="Executor",
+    human_input_mode="NEVER",  # Auto-execute code
+    code_execution_config={
+        "work_dir": ".",
+        "use_docker": False
+    }
+)
+
+# Initiate conversation
+executor.initiate_chat(
+    coder,
+    message="Write a function to calculate fibonacci"
+)
+                    </code>
+                </div>
+
+                <h3>3.3 Decision Matrix: Which Framework?</h3>
+
+                <div class="text-block">
+                    <strong>Ask these questions in order:</strong>
+                </div>
+
+                <ul class="feature-list">
+                    <li><strong>Q1: Do you need multi-agent coordination?</strong> → Yes: AutoGen or LangGraph | No: Continue</li>
+                    <li><strong>Q2: Do you need complex state management?</strong> → Yes: LangGraph | No: Continue</li>
+                    <li><strong>Q3: Do you value learning/debugging over speed?</strong> → Yes: Claude SDK | No: Continue</li>
+                    <li><strong>Q4: Do you want quick prototyping?</strong> → Yes: LangChain or Crew AI | No: Claude SDK</li>
+                </ul>
+
+            </div>
+
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <p>🏗️ CCA-F Deep: Agentic AI Architecture (Expert Training)</p>
+            <p>Section 1-3 Coverage: Fundamentals | Building Blocks | Framework Landscape</p>
+            <p>Next: Claude SDK Deep Dive, LangChain Agents, LangGraph, Production Patterns</p>
+        </div>
+    </div>
+</body>
+</html>
