@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production AI Architect Bootcamp</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #1e1e1e;
+            color: #e0e0e0;
+            overflow-y: auto;
+            border-right: 1px solid #333;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background: #0d47a1;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            border-bottom: 1px solid #333;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .sidebar-content {
+            padding: 10px 0;
+        }
+
+        .topic-group {
+            margin-bottom: 0;
+        }
+
+        .topic-header {
+            padding: 12px 20px;
+            cursor: pointer;
+            background: #252525;
+            border: none;
+            width: 100%;
+            text-align: left;
+            color: #e0e0e0;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .topic-header:hover {
+            background: #333;
+        }
+
+        .topic-header.active {
+            background: #0d47a1;
+            color: white;
+        }
+
+        .topic-header::after {
+            content: '▶';
+            font-size: 12px;
+            transition: transform 0.2s;
+        }
+
+        .topic-header.active::after {
+            transform: rotate(90deg);
+        }
+
+        .chapter-list {
+            display: none;
+            background: #1a1a1a;
+        }
+
+        .chapter-list.active {
+            display: block;
+        }
+
+        .chapter-link {
+            padding: 8px 20px 8px 40px;
+            cursor: pointer;
+            color: #b0b0b0;
+            font-size: 13px;
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+            display: block;
+            text-decoration: none;
+        }
+
+        .chapter-link:hover {
+            background: #2a2a2a;
+            color: #e0e0e0;
+            border-left-color: #0d47a1;
+        }
+
+        .chapter-link.active {
+            background: #2a2a2a;
+            color: #0d47a1;
+            border-left-color: #0d47a1;
+            font-weight: 600;
+        }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+
+        .editor-header {
+            padding: 20px;
+            background: white;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .editor-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .editor-breadcrumb {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .editor-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            background: white;
+        }
+
+        .editor-content h1 {
+            color: #0d47a1;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+
+        .editor-content h2 {
+            color: #1976d2;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 24px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+
+        .editor-content h3 {
+            color: #333;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .editor-content p {
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .editor-content ul, .editor-content ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        .editor-content li {
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .editor-content code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d63384;
+            font-size: 13px;
+        }
+
+        .editor-content pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin-bottom: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .editor-content pre code {
+            color: #d4d4d4;
+            background: none;
+            padding: 0;
+        }
+
+        .placeholder {
+            color: #999;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .placeholder svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .editor-content {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="sidebar-header">🚀 AI Bootcamp</div>
+        <div class="sidebar-content" id="sidebarContent"></div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-container">
+        <div class="editor-header">
+            <div>
+                <div class="editor-title" id="editorTitle">Welcome</div>
+                <div class="editor-breadcrumb" id="editorBreadcrumb"></div>
+            </div>
+        </div>
+        <div class="editor-content" id="editorContent">
+            <div class="placeholder">
+                <h2>Production AI Architect Bootcamp</h2>
+                <p>Select a topic from the left sidebar to begin learning</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data structure for all topics and chapters
+        const bootcampData = {
+            topics: [
+                {
+                    id: 'getting-started',
+                    name: '🚀 Getting Started',
+                    path: 'getting-started/',
+                    chapters: [
+                        { id: 'start-here', name: '00 - Start Here', file: '00-START-HERE.md' },
+                        { id: 'overview', name: '01 - Overview', file: '00-README.md' },
+                        { id: 'status', name: '02 - Bootcamp Status', file: '00-BOOTCAMP-COMPLETE-STATUS.md' },
+                        { id: 'optional', name: '03 - Optional Sections', file: '00-OPTIONAL-SECTION-GUIDE.md' }
+                    ]
+                },
+                {
+                    id: 'prompt-engineering',
+                    name: '✍️ Prompt Engineering',
+                    path: 'prompt-engineering/',
+                    chapters: [
+                        { id: 'pe-101', name: '01 - Fundamentals', file: '01-PROMPT-ENGINEERING-101.md' },
+                        { id: 'pe-exercises', name: '02 - Exercises', file: '01-PROMPT-ENGINEERING-EXERCISES.md' },
+                        { id: 'pe-raw-sdk', name: '03 - Raw SDK Example', file: '01-PROMPT-ENGINEERING-example-01-raw-sdk.py' },
+                        { id: 'pe-langchain', name: '04 - LangChain Example', file: '01-PROMPT-ENGINEERING-example-02-langchain.py' },
+                        { id: 'pe-langgraph', name: '05 - LangGraph Example', file: '01-PROMPT-ENGINEERING-example-03-langgraph.py' },
+                        { id: 'pe-autogen', name: '06 - AutoGen Example', file: '01-PROMPT-ENGINEERING-example-04-autogen.py' },
+                        { id: 'pe-crewai', name: '07 - CrewAI Example', file: '01-PROMPT-ENGINEERING-example-05-crewai.py' }
+                    ]
+                },
+                {
+                    id: 'agent-frameworks',
+                    name: '🤖 Agent Frameworks',
+                    path: 'agent-frameworks/',
+                    chapters: [
+                        { id: 'af-setup', name: '01 - Setup', file: '01-SETUP-WEEK1.md' },
+                        { id: 'af-index', name: '02 - Day 1 Index', file: '01-WEEK1-DAY1-INDEX.md' },
+                        { id: 'af-summary', name: '03 - Day 2 Summary', file: 'WEEK1-DAY2-SUMMARY.md' },
+                        { id: 'af-comparison', name: '04 - Framework Comparison', file: 'overview/19-COMPLETE-FRAMEWORK-COMPARISON.md' },
+                        { id: 'af-mistakes', name: '05 - Common Mistakes', file: 'overview/04-WHAT-WAS-WRONG-AND-FIXED.md' },
+                        { id: 'af-raw-sdk', name: '06 - Raw SDK', file: 'frameworks/raw-sdk/04-RAW-SDK-MODERN.html' },
+                        { id: 'af-langchain', name: '07 - LangChain', file: 'frameworks/langchain/05-LANGCHAIN-MODERN.html' },
+                        { id: 'af-langgraph', name: '08 - LangGraph', file: 'frameworks/langgraph/06-LANGGRAPH-MODERN.html' },
+                        { id: 'af-autogen', name: '09 - AutoGen', file: 'frameworks/autogen/07-AUTOGEN-MODERN.html' },
+                        { id: 'af-crewai', name: '10 - CrewAI', file: 'frameworks/crewai/08-CREWAI-MODERN.html' }
+                    ]
+                },
+                {
+                    id: 'context-engineering',
+                    name: '🧠 Context Engineering',
+                    path: 'context-engineering/',
+                    chapters: [
+                        { id: 'ce-101', name: '01 - Fundamentals', file: '24-CONTEXT-ENGINEERING-101.md' },
+                        { id: 'ce-setup', name: '02 - Setup', file: '25-SETUP-WEEK2.md' },
+                        { id: 'ce-exercises', name: '03 - Exercises', file: '26-CONTEXT-ENGINEERING-EXERCISES.md' },
+                        { id: 'ce-summary', name: '04 - Framework Summary', file: '29-36-FRAMEWORK-CONTEXT-SUMMARY.md' },
+                        { id: 'ce-advanced', name: '05 - Advanced Patterns', file: '39-ADVANCED-CONTEXT-PATTERNS.md' },
+                        { id: 'ce-raw-sdk', name: '06 - Raw SDK Impl', file: 'implementations/27-RAW-SDK-CONTEXT.py' },
+                        { id: 'ce-langchain', name: '07 - LangChain Impl', file: 'implementations/28-LANGCHAIN-CONTEXT.py' }
+                    ]
+                },
+                {
+                    id: 'real-world-apps',
+                    name: '🌍 Real-World Applications',
+                    path: 'real-world-applications/',
+                    chapters: [
+                        { id: 'rwa-overview', name: '01 - Overview', file: '57-WEEK3-OVERVIEW.md' },
+                        { id: 'v1-mvp', name: '02 - V1 Simple MVP', file: 'v1-simple-mvp/58-V1-SIMPLE-MVP.py' },
+                        { id: 'v2-multiturn', name: '03 - V2 Multi-Turn', file: 'v2-multi-turn/59-V2-MULTI-TURN.py' },
+                        { id: 'v2-guide', name: '04 - V2 Detailed Guide', file: 'v2-multi-turn/64-V2-DETAILED-GUIDE.md' },
+                        { id: 'v3-tool', name: '05 - V3 Tool Agent', file: 'v3-tool-agent/60-V3-TOOL-AGENT.py' },
+                        { id: 'v3-guide', name: '06 - V3 Detailed Guide', file: 'v3-tool-agent/65-V3-DETAILED-GUIDE.md' },
+                        { id: 'v4-multi', name: '07 - V4 Multi-Agent', file: 'v4-multi-agent/61-V4-MULTI-AGENT.py' },
+                        { id: 'v4-guide', name: '08 - V4 Detailed Guide', file: 'v4-multi-agent/66-V4-DETAILED-GUIDE.md' },
+                        { id: 'v5-prod', name: '09 - V5 Production', file: 'v5-production/62-V5-PRODUCTION.py' },
+                        { id: 'v5-guide', name: '10 - V5 Detailed Guide', file: 'v5-production/67-V5-DETAILED-GUIDE.md' }
+                    ]
+                },
+                {
+                    id: 'production-patterns',
+                    name: '⚙️ Production Patterns',
+                    path: 'production-patterns/',
+                    chapters: [
+                        { id: 'pp-planning', name: '01 - Planning', file: 'WEEK4-PLANNING.md' },
+                        { id: 'pp-error-handling', name: '02 - Error Handling', file: 'error-handling/error-handling-guide.md' },
+                        { id: 'pp-testing', name: '03 - Testing', file: 'testing/testing-guide.md' },
+                        { id: 'pp-monitoring', name: '04 - Monitoring', file: 'monitoring/monitoring-guide.md' }
+                    ]
+                },
+                {
+                    id: 'reference',
+                    name: '📚 Reference',
+                    path: 'reference/',
+                    chapters: [
+                        { id: 'ref-tech-stack', name: '01 - Technology Stack', file: 'TECHNOLOGY-STACK.md' },
+                        { id: 'ref-cca-f', name: '02 - CCA-F Mapping', file: 'CCA-F-CERTIFICATION-MAPPING.md' },
+                        { id: 'ref-learning-path', name: '03 - Learning Path', file: 'LEARNING-PATH-16WEEKS.md' },
+                        { id: 'ref-roadmap', name: '04 - Bootcamp Roadmap', file: '22-COMPLETE-BOOTCAMP-ROADMAP.md' }
+                    ]
+                },
+                {
+                    id: 'docs',
+                    name: '📖 Documentation',
+                    path: 'docs/',
+                    chapters: [
+                        { id: 'doc-github-ready', name: '01 - GitHub Ready', file: 'BOOTCAMP-READY-FOR-GITHUB.md' },
+                        { id: 'doc-github-deploy', name: '02 - GitHub Pages Deploy', file: 'GITHUB-PAGES-DEPLOYMENT.md' },
+                        { id: 'doc-manifest', name: '03 - File Manifest', file: 'ALL-FILES-MANIFEST.md' }
+                    ]
+                }
+            ]
+        };
+
+        // Initialize sidebar
+        function initializeSidebar() {
+            const sidebarContent = document.getElementById('sidebarContent');
+            
+            bootcampData.topics.forEach(topic => {
+                const topicGroup = document.createElement('div');
+                topicGroup.className = 'topic-group';
+                
+                const topicHeader = document.createElement('button');
+                topicHeader.className = 'topic-header';
+                topicHeader.textContent = topic.name;
+                topicHeader.dataset.topicId = topic.id;
+                
+                topicHeader.addEventListener('click', () => {
+                    topicHeader.classList.toggle('active');
+                    chapterList.classList.toggle('active');
+                });
+                
+                const chapterList = document.createElement('div');
+                chapterList.className = 'chapter-list';
+                
+                topic.chapters.forEach(chapter => {
+                    const chapterLink = document.createElement('a');
+                    chapterLink.className = 'chapter-link';
+                    chapterLink.textContent = chapter.name;
+                    chapterLink.dataset.chapterId = chapter.id;
+                    chapterLink.dataset.file = chapter.file;
+                    chapterLink.dataset.topicPath = topic.path;
+                    chapterLink.href = '#';
+                    
+                    chapterLink.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        loadContent(chapter, topic);
+                        
+                        // Update active state
+                        document.querySelectorAll('.chapter-link').forEach(link => {
+                            link.classList.remove('active');
+                        });
+                        chapterLink.classList.add('active');
+                    });
+                    
+                    chapterList.appendChild(chapterLink);
+                });
+                
+                topicGroup.appendChild(topicHeader);
+                topicGroup.appendChild(chapterList);
+                sidebarContent.appendChild(topicGroup);
+            });
+        }
+
+        // Load content
+        async function loadContent(chapter, topic) {
+            const editorTitle = document.getElementById('editorTitle');
+            const editorBreadcrumb = document.getElementById('editorBreadcrumb');
+            const editorContent = document.getElementById('editorContent');
+            
+            editorTitle.textContent = chapter.name;
+            editorBreadcrumb.textContent = `${topic.name} > ${chapter.name}`;
+            editorContent.innerHTML = '<div class="placeholder"><p>Loading...</p></div>';
+            
+            try {
+                // Try to fetch the file
+                const filePath = `${topic.path}${chapter.file}`;
+                const response = await fetch(filePath);
+                
+                if (!response.ok) {
+                    editorContent.innerHTML = `
+                        <div class="placeholder">
+                            <h3>📄 ${chapter.name}</h3>
+                            <p>File: ${filePath}</p>
+                            <p style="margin-top: 20px; color: #999;">File will be available after extraction</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const content = await response.text();
+                
+                // Check if it's markdown
+                if (chapter.file.endsWith('.md')) {
+                    editorContent.innerHTML = markdownToHtml(content);
+                } else if (chapter.file.endsWith('.py')) {
+                    editorContent.innerHTML = `
+                        <pre><code>${escapeHtml(content)}</code></pre>
+                    `;
+                } else if (chapter.file.endsWith('.html')) {
+                    editorContent.innerHTML = content;
+                } else {
+                    editorContent.innerHTML = `<pre><code>${escapeHtml(content)}</code></pre>`;
+                }
+            } catch (error) {
+                editorContent.innerHTML = `
+                    <div class="placeholder">
+                        <h3>📄 ${chapter.name}</h3>
+                        <p>File: ${topic.path}${chapter.file}</p>
+                        <p style="margin-top: 20px; color: #999;">Extract the ZIP file to view content</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Simple markdown to HTML converter
+        function markdownToHtml(markdown) {
+            let html = markdown;
+            
+            // Headers
+            html = html.replace(/^### (.*?)$/gm, '<h3>$1</h3>');
+            html = html.replace(/^## (.*?)$/gm, '<h2>$1</h2>');
+            html = html.replace(/^# (.*?)$/gm, '<h1>$1</h1>');
+            
+            // Bold and italic
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            
+            // Code blocks
+            html = html.replace(/```(.*?)```/gs, '<pre><code>$1</code></pre>');
+            
+            // Inline code
+            html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+            
+            // Links
+            html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+            
+            // Lists
+            html = html.replace(/^\* (.*?)$/gm, '<li>$1</li>');
+            html = html.replace(/^\- (.*?)$/gm, '<li>$1</li>');
+            html = html.replace(/(<li>.*?<\/li>)/s, '<ul>$1</ul>');
+            
+            // Line breaks
+            html = html.replace(/\n\n+/g, '</p><p>');
+            html = '<p>' + html + '</p>';
+            
+            return html;
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initializeSidebar);
+    </script>
+</body>
+</html>
